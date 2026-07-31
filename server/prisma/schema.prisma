@@ -1,0 +1,260 @@
+// BiblioHub — Prisma schema
+// UUID PKs, createdAt/updatedAt everywhere, soft-delete on User/Book/BookCopy.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------- Enums ----------------
+
+enum Role {
+  MEMBER
+  LIBRARIAN
+  ADMIN
+}
+
+enum MembershipType {
+  STUDENT
+  FACULTY
+  PUBLIC
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CopyStatus {
+  AVAILABLE
+  CHECKED_OUT
+  RESERVED
+  LOST
+  DAMAGED
+}
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+}
+
+enum ReservationStatus {
+  PENDING
+  READY
+  FULFILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum FineStatus {
+  UNPAID
+  PAID
+  WAIVED
+}
+
+enum NotificationType {
+  WELCOME
+  DUE_SOON
+  OVERDUE
+  FINE_ISSUED
+  RESERVATION_READY
+  RESERVATION_EXPIRED
+  ACCOUNT_SUSPENDED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+// ---------------- Models ----------------
+
+model User {
+  id             String         @id @default(uuid())
+  fullName       String
+  email          String         @unique
+  identifier     String?        @unique // staff ID / student no / index — alternate login
+  phone          String?
+  passwordHash   String
+  role           Role           @default(MEMBER)
+  membershipType MembershipType @default(PUBLIC)
+  status         UserStatus     @default(ACTIVE)
+  borrowingLimit Int
+  loanPeriodDays Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+
+  loans         Loan[]
+  reservations  Reservation[]
+  fines         Fine[]
+  notifications Notification[]
+
+  @@index([role])
+  @@index([status])
+}
+
+model Author {
+  id    String  @id @default(uuid())
+  name  String
+  bio   String?
+  books Book[]  @relation("BookAuthors")
+
+  @@unique([name])
+}
+
+model Publisher {
+  id      String  @id @default(uuid())
+  name    String  @unique
+  address String?
+  books   Book[]
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  books       Book[]
+}
+
+model Book {
+  id              String     @id @default(uuid())
+  isbn            String     @unique
+  title           String
+  description     String?
+  publicationYear Int
+  edition         String?
+  language        String?    @default("English")
+  coverImageUrl   String?
+  categoryId      String
+  publisherId     String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+
+  category     Category      @relation(fields: [categoryId], references: [id])
+  publisher    Publisher     @relation(fields: [publisherId], references: [id])
+  authors      Author[]      @relation("BookAuthors")
+  copies       BookCopy[]
+  reservations Reservation[]
+
+  @@index([title])
+  @@index([isbn])
+}
+
+model BookCopy {
+  id              String     @id @default(uuid())
+  bookId          String
+  accessionNumber String     @unique
+  shelfLocation   String
+  status          CopyStatus @default(AVAILABLE)
+  acquiredDate    DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+
+  book  Book   @relation(fields: [bookId], references: [id])
+  loans Loan[]
+
+  @@index([bookId])
+  @@index([status])
+}
+
+model Loan {
+  id           String     @id @default(uuid())
+  copyId       String
+  userId       String
+  checkoutDate DateTime   @default(now())
+  dueDate      DateTime
+  returnDate   DateTime?
+  status       LoanStatus @default(ACTIVE)
+  renewalCount Int        @default(0)
+
+  copy BookCopy @relation(fields: [copyId], references: [id])
+  user User     @relation(fields: [userId], references: [id])
+  fine Fine?
+
+  @@index([userId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model Reservation {
+  id              String            @id @default(uuid())
+  bookId          String
+  userId          String
+  reservationDate DateTime          @default(now())
+  status          ReservationStatus @default(PENDING)
+  queuePosition   Int
+  readyAt         DateTime?
+  expiresAt       DateTime?
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([bookId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Fine {
+  id     String     @id @default(uuid())
+  loanId String     @unique
+  userId String
+  amount Decimal    @db.Decimal(10, 2)
+  reason String
+  status FineStatus @default(UNPAID)
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loan Loan @relation(fields: [loanId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Notification {
+  id        String              @id @default(uuid())
+  userId    String
+  type      NotificationType
+  channel   NotificationChannel
+  title     String
+  message   String
+  read      Boolean             @default(false)
+  emailSent Boolean             @default(false)
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([actorId])
+}
