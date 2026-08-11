@@ -1,8 +1,15 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 import { Badge, Card, Skeleton } from '../components/ui';
+import {
+  BookmarkIcon,
+  BookOpenIcon,
+  ClockIcon,
+  CoinsIcon,
+} from '../components/icons';
 import { formatDate, isOverdue, money } from '../lib/format';
 import StaffDashboard from './staff/StaffDashboard';
 import type { Fine, Loan, Reservation } from '../types';
@@ -26,11 +33,13 @@ function Tile({
   label,
   value,
   hint,
+  icon,
   tone = 'default',
 }: {
   label: string;
   value: string | number;
   hint?: string;
+  icon: ReactNode;
   tone?: 'default' | 'warn' | 'danger';
 }) {
   const valueTone = { default: 'text-fg', warn: 'text-amber-600 dark:text-amber-400', danger: 'text-red-600 dark:text-red-400' }[
@@ -38,7 +47,12 @@ function Tile({
   ];
   return (
     <Card className="p-5">
-      <p className="text-sm font-medium text-fg-muted">{label}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-fg-muted">{label}</p>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-softfg [&>svg]:h-4 [&>svg]:w-4">
+          {icon}
+        </span>
+      </div>
       <p className={`mt-1 font-display text-3xl font-bold ${valueTone}`}>{value}</p>
       {hint && <p className="mt-1 text-xs text-fg-subtle">{hint}</p>}
     </Card>
@@ -219,17 +233,20 @@ function MemberDashboard() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Tile
             label="On loan"
+            icon={<BookOpenIcon />}
             value={`${active.length} / ${limit}`}
             hint={`${Math.max(limit - active.length, 0)} more allowed`}
           />
           <Tile
             label="Due soon"
+            icon={<ClockIcon />}
             value={dueSoon.length}
             hint={`Within ${DUE_SOON_DAYS} days`}
             tone={dueSoon.length > 0 ? 'warn' : 'default'}
           />
           <Tile
             label="Reservations"
+            icon={<BookmarkIcon />}
             value={ready.length + pending.length}
             hint={
               ready.length > 0 ? `${ready.length} ready to collect` : `${pending.length} in queue`
@@ -237,6 +254,7 @@ function MemberDashboard() {
           />
           <Tile
             label="Outstanding"
+            icon={<CoinsIcon />}
             value={money(outstanding)}
             hint={outstanding > 0 ? 'Payable at the desk' : 'Nothing owed'}
             tone={outstanding > 0 ? 'danger' : 'default'}
