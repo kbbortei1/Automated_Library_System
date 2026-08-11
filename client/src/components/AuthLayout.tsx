@@ -21,12 +21,16 @@ function LibraryBackdrop() {
           src="/prempeh-library.jpg"
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center"
           onError={() => setFailed(true)}
         />
       )}
-      {/* Scrim: keeps the overlaid text legible whatever the photo's exposure. */}
-      <div className="absolute inset-0 bg-gradient-to-t from-knust-900 via-knust-900/80 to-knust-900/45" />
+      {/* Two-part scrim. A flat tint unifies the photo with the palette, then a
+          vertical falloff darkens both ends — the top of the frame is bright
+          sky and carries the crest, the bottom carries the stats row. The
+          middle stays open so the building is still legible. */}
+      <div className="absolute inset-0 bg-knust-900/45" />
+      <div className="absolute inset-0 bg-gradient-to-b from-knust-900/65 via-knust-900/45 to-knust-900/90" />
       {/* Gold hairline echoing the crest. */}
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-gold-500/60 to-transparent" />
     </div>
