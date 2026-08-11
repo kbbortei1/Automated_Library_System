@@ -12,7 +12,7 @@ export function NotificationBell() {
   return (
     <NavLink
       to="/notifications"
-      className="relative rounded-full p-2 text-slate-500 transition hover:bg-slate-100"
+      className="relative rounded-full p-2 text-fg-muted transition hover:bg-surface-3"
       aria-label="Notifications"
     >
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>

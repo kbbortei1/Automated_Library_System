@@ -21,7 +21,7 @@ export function BookCover({
 
   if (!src || failed) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-slate-100 text-5xl">📘</div>
+      <div className="flex h-full w-full items-center justify-center bg-surface-3 text-5xl">📘</div>
     );
   }
 

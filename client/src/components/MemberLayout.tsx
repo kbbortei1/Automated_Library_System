@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { NotificationBell } from './NotificationBell';
 import { KnustCrest } from './KnustCrest';
+import { ThemeToggle } from './ThemeToggle';
 import { Avatar } from './ui';
 
 const LINKS = [
@@ -20,8 +21,8 @@ function TopLink({ to, label, onClick }: { to: string; label: string; onClick?: 
       className={({ isActive }) =>
         `border-b-2 px-1 pb-0.5 text-sm font-medium transition ${
           isActive
-            ? 'border-knust-600 text-knust-700'
-            : 'border-transparent text-slate-500 hover:text-knust-600'
+            ? 'border-gold-500 text-white'
+            : 'border-transparent text-chrome-muted hover:text-white'
         }`
       }
     >
@@ -36,12 +37,12 @@ export function MemberLayout() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div className="flex min-h-screen flex-col bg-bg">
+      <header className="sticky top-0 z-20 border-b border-black/20 bg-chrome text-chrome-fg">
         <nav className="mx-auto flex max-w-6xl items-center gap-8 px-4 py-3 sm:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2.5">
             <KnustCrest className="h-9 w-9" />
-            <span className="font-display text-lg font-extrabold leading-none tracking-tight text-knust-900">
+            <span className="font-display text-lg font-extrabold leading-none tracking-tight text-chrome-fg">
               KNUST Library
             </span>
           </Link>
@@ -52,10 +53,11 @@ export function MemberLayout() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle className="text-chrome-muted hover:bg-white/10 hover:text-white" />
             <NotificationBell />
             <Link
               to="/profile"
-              className="rounded-full ring-2 ring-transparent transition hover:ring-knust-100"
+              className="rounded-full ring-2 ring-transparent transition hover:ring-accent/30"
             >
               <Avatar name={user?.fullName ?? '?'} />
             </Link>
@@ -64,13 +66,13 @@ export function MemberLayout() {
                 logout();
                 navigate('/login');
               }}
-              className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 sm:block"
+              className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-chrome-muted transition hover:bg-white/10 hover:text-white sm:block"
             >
               Logout
             </button>
             <button
               onClick={() => setOpen((o) => !o)}
-              className="rounded-lg p-1.5 text-xl text-slate-600 md:hidden"
+              className="rounded-lg p-1.5 text-xl text-chrome-muted md:hidden"
               aria-label="Menu"
             >
               ☰
@@ -78,13 +80,13 @@ export function MemberLayout() {
           </div>
         </nav>
         {open && (
-          <div className="flex flex-col gap-1 border-t border-slate-100 px-4 py-3 md:hidden">
+          <div className="flex flex-col gap-1 border-t border-white/15 px-4 py-3 md:hidden">
             {LINKS.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-chrome-muted hover:bg-white/10 hover:text-white"
               >
                 {l.label}
               </NavLink>
@@ -95,7 +97,7 @@ export function MemberLayout() {
                 logout();
                 navigate('/login');
               }}
-              className="rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-slate-100"
+              className="rounded-lg px-3 py-2 text-left text-sm font-medium text-chrome-muted hover:bg-white/10 hover:text-white"
             >
               Logout
             </button>
@@ -107,24 +109,24 @@ export function MemberLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
+      <footer className="border-t border-border bg-surface">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-2.5">
               <KnustCrest className="h-8 w-8" />
-              <h3 className="font-display text-lg font-bold text-knust-900">KNUST Library</h3>
+              <h3 className="font-display text-lg font-bold text-fg">KNUST Library</h3>
             </div>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-500">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-fg-muted">
               The Prempeh II Library and the college libraries of Kwame Nkrumah University of
               Science and Technology, in one catalogue.
             </p>
-            <p className="mt-3 font-display text-sm italic text-knust-700">
+            <p className="mt-3 font-display text-sm italic text-accent">
               Nyansapɔ Wɔsane No Badwenma
             </p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-800">Support</h4>
-            <ul className="mt-3 space-y-2 text-sm text-slate-500">
+            <h4 className="text-sm font-semibold text-fg">Support</h4>
+            <ul className="mt-3 space-y-2 text-sm text-fg-muted">
               <li>Borrowing Rules</li>
               <li>Library Locations</li>
               <li>Contact Staff</li>
@@ -132,28 +134,28 @@ export function MemberLayout() {
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-800">Account</h4>
-            <ul className="mt-3 space-y-2 text-sm text-slate-500">
+            <h4 className="text-sm font-semibold text-fg">Account</h4>
+            <ul className="mt-3 space-y-2 text-sm text-fg-muted">
               <li>
-                <Link to="/my-loans" className="hover:text-knust-700">
+                <Link to="/my-loans" className="hover:text-accent">
                   Reading History
                 </Link>
               </li>
               <li>
-                <Link to="/profile" className="hover:text-knust-700">
+                <Link to="/profile" className="hover:text-accent">
                   Profile Settings
                 </Link>
               </li>
               <li>
-                <Link to="/notifications" className="hover:text-knust-700">
+                <Link to="/notifications" className="hover:text-accent">
                   Notifications
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-100">
-          <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-4 py-4 text-xs text-slate-400 sm:flex-row sm:px-6">
+        <div className="border-t border-border-subtle">
+          <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-4 py-4 text-xs text-fg-subtle sm:flex-row sm:px-6">
             <span>
               © {new Date().getFullYear()} Kwame Nkrumah University of Science and Technology,
               Kumasi.

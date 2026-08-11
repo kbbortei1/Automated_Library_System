@@ -14,8 +14,8 @@ export function StaffHeader({
   return (
     <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold text-navy-800 sm:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-fg sm:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-fg-muted">{subtitle}</p>}
       </div>
       <div className="flex items-center gap-3">
         {children}

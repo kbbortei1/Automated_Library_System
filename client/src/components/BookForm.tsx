@@ -81,9 +81,9 @@ export function BookForm({
       </div>
       <Input label="Title" required value={v.title} onChange={set('title')} />
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-700">Description</span>
+        <span className="mb-1 block text-sm font-medium text-fg">Description</span>
         <textarea
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+          className="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           rows={3}
           value={v.description}
           onChange={set('description')}

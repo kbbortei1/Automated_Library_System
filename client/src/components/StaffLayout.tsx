@@ -46,7 +46,7 @@ function SidebarLink({ item, onClick }: { item: NavItem; onClick?: () => void })
       onClick={onClick}
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-          isActive ? 'bg-navy-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+          isActive ? 'bg-accent text-white shadow-sm' : 'text-fg-muted hover:bg-surface-3'
         }`
       }
     >
@@ -67,8 +67,8 @@ export function StaffLayout() {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="px-3 py-5">
-        <h1 className="text-xl font-extrabold text-navy-800">Staff Portal</h1>
-        <p className="text-xs text-slate-400">
+        <h1 className="text-xl font-extrabold text-fg">Staff Portal</h1>
+        <p className="text-xs text-fg-subtle">
           {hasRole('ADMIN') ? 'Administrator Access' : 'Librarian Access'}
         </p>
       </div>
@@ -79,7 +79,7 @@ export function StaffLayout() {
         ))}
         {secondary.length > 0 && (
           <>
-            <div className="my-3 border-t border-slate-200" />
+            <div className="my-3 border-t border-border" />
             {secondary.map((i) => (
               <SidebarLink key={i.to} item={i} onClick={close} />
             ))}
@@ -87,12 +87,12 @@ export function StaffLayout() {
         )}
       </nav>
 
-      <div className="border-t border-slate-200 p-3">
+      <div className="border-t border-border p-3">
         <div className="flex items-center gap-3 rounded-lg px-2 py-2">
           <Avatar name={user?.fullName ?? '?'} />
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-slate-800">{user?.fullName}</div>
-            <div className="text-xs capitalize text-slate-400">{user?.role.toLowerCase()}</div>
+            <div className="truncate text-sm font-semibold text-fg">{user?.fullName}</div>
+            <div className="text-xs capitalize text-fg-subtle">{user?.role.toLowerCase()}</div>
           </div>
         </div>
         <button
@@ -100,7 +100,7 @@ export function StaffLayout() {
             logout();
             navigate('/login');
           }}
-          className="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-500 hover:bg-slate-100"
+          className="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-fg-muted hover:bg-surface-3"
         >
           Sign out
         </button>
@@ -109,11 +109,11 @@ export function StaffLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-bg">
       {/* Mobile top bar */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-        <span className="text-lg font-extrabold text-navy-800">Staff Portal</span>
-        <button onClick={() => setOpen((o) => !o)} className="text-2xl text-slate-600" aria-label="Menu">
+      <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 lg:hidden">
+        <span className="text-lg font-extrabold text-fg">Staff Portal</span>
+        <button onClick={() => setOpen((o) => !o)} className="text-2xl text-fg-muted" aria-label="Menu">
           ☰
         </button>
       </div>
@@ -122,12 +122,12 @@ export function StaffLayout() {
       {open && (
         <div className="fixed inset-0 z-30 lg:hidden">
           <div className="absolute inset-0 bg-black/30" onClick={close} />
-          <div className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">{sidebar}</div>
+          <div className="absolute left-0 top-0 h-full w-72 bg-surface shadow-xl">{sidebar}</div>
         </div>
       )}
 
       <div className="lg:flex">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-slate-200 bg-white lg:block">
+        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-border bg-surface lg:block">
           {sidebar}
         </aside>
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 sm:py-8">
