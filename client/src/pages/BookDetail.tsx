@@ -41,7 +41,7 @@ export default function BookDetail() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/catalogue" className="text-sm text-brand-600 hover:underline">
+      <Link to="/catalogue" className="text-sm text-knust-700 hover:underline">
         ← Back to catalogue
       </Link>
 
@@ -54,7 +54,7 @@ export default function BookDetail() {
 
         <div className="md:col-span-2">
           <Card>
-            <h1 className="text-2xl font-bold text-navy-800">{book.title}</h1>
+            <h1 className="font-display text-2xl font-bold text-knust-900">{book.title}</h1>
             <p className="mt-1 text-slate-600">
               by {book.authors.map((a) => a.name).join(', ')}
             </p>
@@ -105,7 +105,7 @@ export default function BookDetail() {
               <div className="mt-6 flex flex-col gap-3">
                 {msg && <Alert kind={msg.kind}>{msg.text}</Alert>}
                 <div>
-                  <Button onClick={() => reserve.mutate()} disabled={reserve.isPending}>
+                  <Button variant="knust" onClick={() => reserve.mutate()} disabled={reserve.isPending}>
                     {available ? 'Reserve & hold a copy' : 'Join the reservation queue'}
                   </Button>
                 </div>

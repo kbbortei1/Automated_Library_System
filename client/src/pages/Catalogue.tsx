@@ -20,7 +20,7 @@ function BookCard({ book }: { book: Book }) {
           {book.category.name}
         </Badge>
         <Link to={`/catalogue/${book.id}`}>
-          <h3 className="mt-2 line-clamp-2 font-display font-bold leading-snug text-navy-800 hover:text-navy-600">
+          <h3 className="mt-2 line-clamp-2 font-display font-bold leading-snug text-knust-900 hover:text-knust-700">
             {book.title}
           </h3>
         </Link>
@@ -33,7 +33,11 @@ function BookCard({ book }: { book: Book }) {
           )}
           <Link
             to={`/catalogue/${book.id}`}
-            className="text-sm font-semibold text-brand-600 hover:text-brand-700"
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+              available
+                ? 'bg-knust-600 text-white hover:bg-knust-700'
+                : 'border border-knust-200 bg-knust-50 text-knust-700 hover:bg-knust-100'
+            }`}
           >
             {available ? 'Borrow' : 'Reserve'}
           </Link>
@@ -79,7 +83,7 @@ export default function Catalogue() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-3xl font-bold text-navy-800">Discover your next great read</h1>
+      <h1 className="font-display text-3xl font-bold text-knust-900">Discover your next great read</h1>
 
       {/* Search bar */}
       <div className="flex flex-col gap-3 sm:flex-row">
@@ -100,7 +104,7 @@ export default function Catalogue() {
               first();
             }}
             placeholder="Search by title, author, or ISBN…"
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20"
           />
         </div>
         <Select
@@ -117,7 +121,7 @@ export default function Catalogue() {
         {/* Filters sidebar */}
         <aside className="flex flex-col gap-6">
           <div>
-            <h2 className="mb-3 text-lg font-bold text-navy-800">Categories</h2>
+            <h2 className="mb-3 text-lg font-bold text-knust-900">Categories</h2>
             <ul className="space-y-1 text-sm">
               <li>
                 <button
@@ -127,7 +131,7 @@ export default function Catalogue() {
                   }}
                   className={`flex w-full items-center justify-between rounded-lg px-3 py-2 ${
                     categoryId === ''
-                      ? 'bg-navy-700 font-semibold text-white'
+                      ? 'bg-knust-700 font-semibold text-white'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -143,7 +147,7 @@ export default function Catalogue() {
                     }}
                     className={`flex w-full items-center justify-between rounded-lg px-3 py-2 ${
                       categoryId === c.id
-                        ? 'bg-navy-700 font-semibold text-white'
+                        ? 'bg-knust-700 font-semibold text-white'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -155,7 +159,7 @@ export default function Catalogue() {
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="font-bold text-navy-800">Available only</span>
+            <span className="font-bold text-knust-900">Available only</span>
             <Toggle
               checked={availableOnly}
               onChange={(v) => {
@@ -196,7 +200,7 @@ export default function Catalogue() {
                   >
                     ‹
                   </button>
-                  <span className="rounded-lg bg-navy-700 px-3.5 py-1.5 text-sm font-semibold text-white">
+                  <span className="rounded-lg bg-knust-700 px-3.5 py-1.5 text-sm font-semibold text-white">
                     {data.page}
                   </span>
                   <span className="px-2 text-sm text-slate-400">of {data.totalPages || 1}</span>

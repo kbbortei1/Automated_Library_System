@@ -26,7 +26,7 @@ export default function Notifications() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-navy-800">Notifications</h1>
+        <h1 className="font-display text-2xl font-bold text-knust-900">Notifications</h1>
         {(data?.unread ?? 0) > 0 && (
           <Button variant="secondary" onClick={() => markAll.mutate()}>
             Mark all read
@@ -45,7 +45,7 @@ export default function Notifications() {
           {data.items.map((n) => (
             <Card
               key={n.id}
-              className={`${n.read ? '' : 'border-l-4 border-l-brand-500'} cursor-pointer`}
+              className={`${n.read ? '' : 'border-l-4 border-l-knust-500'} cursor-pointer`}
             >
               <button
                 onClick={() => !n.read && markRead.mutate(n.id)}

@@ -41,7 +41,7 @@ export default function Profile() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-2xl font-bold text-navy-800">Profile</h1>
+      <h1 className="font-display text-2xl font-bold text-knust-900">Profile</h1>
 
       <Card>
         <h2 className="mb-4 text-lg font-semibold text-slate-700">Account details</h2>
@@ -52,7 +52,7 @@ export default function Profile() {
           <Input label="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
           <Input label="Phone" value={phone ?? ''} onChange={(e) => setPhone(e.target.value)} />
           <div>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" variant="knust">Save changes</Button>
           </div>
         </form>
       </Card>
@@ -77,7 +77,7 @@ export default function Profile() {
             onChange={(e) => setPw((p) => ({ ...p, newPassword: e.target.value }))}
           />
           <div>
-            <Button type="submit">Update password</Button>
+            <Button type="submit" variant="knust">Update password</Button>
           </div>
         </form>
       </Card>
