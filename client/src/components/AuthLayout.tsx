@@ -15,7 +15,7 @@ function LibraryBackdrop() {
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-knust-900 via-knust-800 to-knust-600">
+    <div className="absolute inset-0 bg-gradient-to-br from-ink-900 via-ink to-ink-700">
       {!failed && (
         <img
           src="/prempeh-library.jpg"
@@ -28,9 +28,12 @@ function LibraryBackdrop() {
       {/* Two-part scrim. A flat tint unifies the photo with the palette, then a
           vertical falloff darkens both ends: the top of the frame is bright
           sky and carries the crest, the bottom carries the stats row. The
-          middle stays open so the building is still legible. */}
-      <div className="absolute inset-0 bg-knust-900/45" />
-      <div className="absolute inset-0 bg-gradient-to-b from-knust-900/65 via-knust-900/45 to-knust-900/90" />
+          middle stays open so the building is still legible.
+
+          The tint is near-black green rather than the saturated forest ramp,
+          so this panel reads as a dark photograph instead of a green block. */}
+      <div className="absolute inset-0 bg-ink/55" />
+      <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink/50 to-ink-900/95" />
       {/* Gold hairline echoing the crest. */}
       <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-gold-500/60 to-transparent" />
     </div>
@@ -56,7 +59,7 @@ export function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white lg:grid lg:grid-cols-[1.05fr_1fr]">
+    <div className="flex min-h-screen flex-col bg-surface lg:grid lg:grid-cols-[1.05fr_1fr]">
       {/* ---- Brand panel (desktop only) ---- */}
       <aside className="relative hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
         <LibraryBackdrop />
@@ -95,9 +98,9 @@ export function AuthLayout({
       </aside>
 
       {/* ---- Form panel ---- */}
-      <main className="flex flex-1 flex-col bg-white">
+      <main className="flex flex-1 flex-col bg-surface">
         {/* Compact brand band standing in for the photo panel on small screens. */}
-        <div className="relative flex items-center gap-3 bg-knust-900 px-5 py-4 lg:hidden">
+        <div className="relative flex items-center gap-3 bg-ink px-5 py-4 lg:hidden">
           <KnustCrest className="h-10 w-10" />
           <div>
             <div className="font-display text-base font-bold leading-tight text-white">KNUST</div>
@@ -111,13 +114,13 @@ export function AuthLayout({
         <div className="flex flex-1 items-center justify-center px-5 py-10 sm:px-8 sm:py-14">
           <div className="w-full max-w-md">
             <header className="mb-8">
-              <h1 className="font-display text-3xl font-bold text-knust-900">{title}</h1>
-              <p className="mt-2 text-sm leading-relaxed text-slate-500">{subtitle}</p>
+              <h1 className="font-display text-3xl font-bold text-fg">{title}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-fg-muted">{subtitle}</p>
             </header>
 
             {children}
 
-            <p className="mt-10 text-center text-xs leading-relaxed text-slate-400">
+            <p className="mt-10 text-center text-xs leading-relaxed text-fg-subtle">
               Kwame Nkrumah University of Science and Technology
               <br />
               Kumasi, Ghana
