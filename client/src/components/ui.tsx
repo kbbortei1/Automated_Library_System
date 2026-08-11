@@ -82,7 +82,11 @@ export function Alert({
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-border bg-surface p-6 shadow-card ${className}`}>
+    // Shadows are a light-mode affordance: on a dark surface there is nothing
+    // for them to darken against, so the border carries the edge instead.
+    <div
+      className={`rounded-xl border border-border bg-surface p-6 shadow-card dark:shadow-none ${className}`}
+    >
       {children}
     </div>
   );

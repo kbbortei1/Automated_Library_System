@@ -41,36 +41,63 @@
   --chrome-muted: 160 183 167;
 }
 
+/*
+  Dimmed dark scheme.
+
+  Elevation on dark comes from lightness, not shadow: a drop shadow has
+  nothing to darken against. Steps are tuned in perceptual L* rather than
+  WCAG ratio, which is misleading down here because its +0.05 term swamps
+  everything (a 5 L* step still reports as ~1.1:1).
+
+  Surfaces sit in a dimmed band (L* 12-27) rather than near-black. A
+  near-black field with a single accent is what makes a dark theme read as
+  a flat slab, and it makes large empty areas feel heavy.
+*/
 :root.dark {
   color-scheme: dark;
 
-  --bg: 16 22 19; /* #101613 */
-  --surface: 24 32 27; /* #18201b */
-  --surface-2: 32 42 35; /* #202a23 */
-  --surface-3: 43 55 47; /* #2b372f */
+  --bg: 27 32 29; /* #1b201d  L* 11.7 */
+  --surface: 36 43 40; /* #242b28  L* 16.8  +5.1 */
+  --surface-2: 46 54 50; /* #2e3632  L* 21.8  +5.0 */
+  --surface-3: 57 67 62; /* #39433e  L* 27.4  +5.6 */
 
-  --border: 48 62 52; /* #303e34 */
-  --border-subtle: 38 50 42; /* #26322a */
+  /* Borders carry the edges that shadows would in light mode, so they sit
+     well clear of the surface they sit on. */
+  --border: 72 88 80; /* #485850  L* 35.9 */
+  --border-subtle: 52 62 57; /* #343e39 */
 
   /* Off-white rather than #ffffff: full white on a dark surface is the
      other half of the glare problem. */
-  --fg: 230 232 230; /* #e6e8e6 */
-  --fg-muted: 165 176 168; /* #a5b0a8 */
-  --fg-subtle: 124 138 128; /* #7c8a80 */
+  --fg: 233 236 233; /* #e9ece9 */
+  --fg-muted: 168 179 171; /* #a8b3ab */
+  --fg-subtle: 127 139 131; /* #7f8b83 */
 
   /* Saturated greens go muddy on dark surfaces, so the accent lifts in
      lightness and drops a little in chroma. */
-  --accent: 74 163 108; /* #4aa36c */
-  --accent-hover: 104 186 134; /* #68ba86 */
-  --accent-fg: 8 20 13;
-  --accent-soft: 30 51 39; /* #1e3327 */
-  --accent-soft-fg: 138 201 162; /* #8ac9a2 */
+  --accent: 87 184 126; /* #57b87e */
+  --accent-hover: 122 205 155; /* #7acd9b */
+  --accent-fg: 8 24 15;
+  --accent-soft: 38 56 46; /* #26382e */
+  --accent-soft-fg: 150 214 176; /* #96d6b0 */
 
-  --chrome: 11 18 14; /* #0b120e */
+  /* The header has to stay a distinct plane from the page. In the previous
+     palette the two were 1.8 L* apart, which read as one surface. */
+  --chrome: 20 24 22; /* #141816  L* 7.8, 3.9 below the page */
   --chrome-fg: 233 240 234;
-  --chrome-muted: 150 170 156;
+  --chrome-muted: 158 172 163;
 }
 
 body {
   @apply bg-bg font-sans text-fg antialiased;
+}
+
+/*
+  Every interactive element carries Tailwind's `transition` shorthand, which
+  includes colour. Without this, flipping the theme animates the entire page
+  at once and the switch feels laggy rather than instant.
+*/
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
 }
