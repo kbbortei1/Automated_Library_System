@@ -6,6 +6,7 @@ import { useAuth } from '../lib/auth';
 import { Alert, Button, Card } from '../components/ui';
 import { BookCover } from '../components/BookCover';
 import type { Book } from '../types';
+import { ArrowLeftIcon } from '../components/icons';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -41,8 +42,12 @@ export default function BookDetail() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/catalogue" className="text-sm text-accent hover:underline">
-        ← Back to catalogue
+      <Link
+        to="/catalogue"
+        className="inline-flex w-fit items-center gap-1.5 text-sm text-accent hover:underline"
+      >
+        <ArrowLeftIcon className="h-4 w-4" />
+        Back to catalogue
       </Link>
 
       <div className="grid gap-6 md:grid-cols-3">
