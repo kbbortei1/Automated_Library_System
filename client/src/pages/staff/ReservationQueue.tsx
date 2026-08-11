@@ -79,7 +79,7 @@ export default function ReservationQueue() {
                   <td className="px-4 py-3 font-medium text-slate-800">{r.book.title}</td>
                   <td className="px-4 py-3 text-slate-600">{r.user.fullName}</td>
                   <td className="px-4 py-3 text-slate-600">
-                    {r.status === 'PENDING' ? `#${r.queuePosition}` : '—'}
+                    {r.status === 'PENDING' ? `#${r.queuePosition}` : '-'}
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -89,7 +89,7 @@ export default function ReservationQueue() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-slate-600">
-                    {r.status === 'READY' ? formatDate(r.expiresAt) : '—'}
+                    {r.status === 'READY' ? formatDate(r.expiresAt) : '-'}
                   </td>
                   <td className="px-4 py-3">
                     {(r.status === 'PENDING' || r.status === 'READY') && (

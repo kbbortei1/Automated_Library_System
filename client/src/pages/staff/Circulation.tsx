@@ -27,11 +27,11 @@ function StepBadge({ n }: { n: number }) {
 export default function Circulation() {
   const qc = useQueryClient();
 
-  // Step 1 — member
+  // Step 1: member
   const [memberSearch, setMemberSearch] = useState('');
   const [member, setMember] = useState<User | null>(null);
 
-  // Step 2 — copy
+  // Step 2: copy
   const [accession, setAccession] = useState('');
   const [copy, setCopy] = useState<CopyLookup | null>(null);
   const [copyError, setCopyError] = useState('');
@@ -87,7 +87,7 @@ export default function Circulation() {
     onSuccess: (loan: { copy: { book: { title: string } }; dueDate: string }) => {
       setToast({
         kind: 'success',
-        text: `Checked out "${loan.copy.book.title}" — due ${formatDate(loan.dueDate)}`,
+        text: `Checked out "${loan.copy.book.title}", due ${formatDate(loan.dueDate)}`,
       });
       setCopy(null);
       setAccession('');
@@ -107,7 +107,7 @@ export default function Circulation() {
       setToast({
         kind: r.fine ? 'error' : 'success',
         text: r.fine
-          ? `Returned "${r.loan.copy.book.title}" — fine ${money(r.fine.amount)}`
+          ? `Returned "${r.loan.copy.book.title}", fine ${money(r.fine.amount)}`
           : `Returned "${r.loan.copy.book.title}" on time`,
       });
       setReturnAccession('');
@@ -141,7 +141,7 @@ export default function Circulation() {
       {toast && <div className="mb-5"><Alert kind={toast.kind}>{toast.text}</Alert></div>}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Step 1 — member */}
+        {/* Step 1: member */}
         <Card>
           <div className="mb-4 flex items-center gap-3">
             <StepBadge n={1} />
@@ -198,7 +198,7 @@ export default function Circulation() {
                 <div className="rounded-lg bg-slate-50 p-3">
                   <div className="text-xs uppercase text-slate-400">Current Loans</div>
                   <div className="font-semibold text-slate-800">
-                    {memberLoans?.total ?? '—'} / {member.borrowingLimit}
+                    {memberLoans?.total ?? '-'} / {member.borrowingLimit}
                   </div>
                 </div>
                 <div className="rounded-lg bg-slate-50 p-3">
@@ -215,7 +215,7 @@ export default function Circulation() {
           )}
         </Card>
 
-        {/* Step 2 — copy */}
+        {/* Step 2: copy */}
         <Card className={member && eligibility?.eligible ? '' : 'opacity-60'}>
           <div className="mb-4 flex items-center gap-3">
             <StepBadge n={2} />

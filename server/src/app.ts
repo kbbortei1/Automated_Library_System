@@ -28,7 +28,7 @@ export function createApp() {
   );
   app.use(express.json());
 
-  // Health check (Phase 0) — verifies process and DB connectivity.
+  // Health check (Phase 0), verifies process and DB connectivity.
   app.get(
     '/api/health',
     asyncHandler(async (_req, res) => {

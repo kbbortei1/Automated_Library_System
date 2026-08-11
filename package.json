@@ -2,7 +2,7 @@
   "name": "bibliohub",
   "version": "0.1.0",
   "private": true,
-  "description": "BiblioHub — Automated Library Management System (monorepo)",
+  "description": "BiblioHub: Automated Library Management System (monorepo)",
   "workspaces": [
     "server",
     "client"

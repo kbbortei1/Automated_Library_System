@@ -67,7 +67,7 @@ export default function Returns() {
               Overdue fine issued: {money(info.fine.amount)} ({info.fine.reason})
             </div>
           ) : (
-            <div>No fine — returned on time.</div>
+            <div>No fine, returned on time.</div>
           )}
           {info.reservationPromoted && (
             <div>📌 Held for the next member in the reservation queue.</div>

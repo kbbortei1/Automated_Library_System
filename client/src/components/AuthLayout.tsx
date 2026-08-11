@@ -26,7 +26,7 @@ function LibraryBackdrop() {
         />
       )}
       {/* Two-part scrim. A flat tint unifies the photo with the palette, then a
-          vertical falloff darkens both ends — the top of the frame is bright
+          vertical falloff darkens both ends: the top of the frame is bright
           sky and carries the crest, the bottom carries the stats row. The
           middle stays open so the building is still legible. */}
       <div className="absolute inset-0 bg-knust-900/45" />
@@ -70,14 +70,14 @@ export function AuthLayout({
         </div>
 
         {/* The facade behind this block is pale concrete, so the copy carries a
-            soft text-shadow on top of the scrim — belt and braces against a
+            soft text-shadow on top of the scrim, belt and braces against a
             replacement photo with different exposure. */}
         <div className="relative max-w-lg [text-shadow:0_1px_3px_rgb(0_0_0_/_0.55)]">
           <h2 className="font-display text-4xl font-bold leading-tight text-white xl:text-5xl">
             Prempeh&nbsp;II Library
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/90">
-            The management centre of the KNUST Library System — serving the Prempeh&nbsp;II Library,
+            The management centre of the KNUST Library System, serving the Prempeh&nbsp;II Library,
             six college libraries and the distance-learning collections from one catalogue.
           </p>
 
@@ -117,7 +117,7 @@ export function AuthLayout({
 
             {/*
               Arbitrary-variant overrides re-tint the shared <Input>/<Select> focus
-              ring from navy to KNUST green for the auth screens only — higher
+              ring from navy to KNUST green for the auth screens only, higher
               specificity than the components' own focus classes.
             */}
             <div className="[&_input:focus]:border-knust-500 [&_input:focus]:ring-knust-500/20 [&_select:focus]:border-knust-500 [&_select:focus]:ring-knust-500/20">

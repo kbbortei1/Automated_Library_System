@@ -27,7 +27,7 @@ export default function BookDetail() {
         text:
           r.status === 'READY'
             ? 'A copy is ready for you to collect!'
-            : `Reserved — you are #${r.queuePosition} in the queue.`,
+            : `Reserved, you are #${r.queuePosition} in the queue.`,
       });
       qc.invalidateQueries({ queryKey: ['book', id] });
     },
@@ -88,11 +88,11 @@ export default function BookDetail() {
               </div>
               <div>
                 <dt className="text-slate-400">Language</dt>
-                <dd className="font-medium text-slate-700">{book.language ?? '—'}</dd>
+                <dd className="font-medium text-slate-700">{book.language ?? '-'}</dd>
               </div>
               <div>
                 <dt className="text-slate-400">Edition</dt>
-                <dd className="font-medium text-slate-700">{book.edition ?? '—'}</dd>
+                <dd className="font-medium text-slate-700">{book.edition ?? '-'}</dd>
               </div>
             </dl>
 

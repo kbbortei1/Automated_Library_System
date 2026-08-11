@@ -77,7 +77,7 @@ export const FineService = {
     });
   },
 
-  // FR22 — members with unpaid fines and/or overdue loans, with totals for the defaulters report.
+  // FR22: members with unpaid fines and/or overdue loans, with totals for the defaulters report.
   async defaulters() {
     const grouped = await prisma.fine.groupBy({
       by: ['userId'],

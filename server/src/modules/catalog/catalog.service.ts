@@ -11,9 +11,9 @@ export interface BookWriteInput {
   edition?: string;
   language?: string;
   coverImageUrl?: string;
-  category: string; // name — find-or-created
-  publisher: string; // name — find-or-created
-  authors: string[]; // names — find-or-created
+  category: string; // name, find-or-created
+  publisher: string; // name, find-or-created
+  authors: string[]; // names, find-or-created
 }
 
 const bookInclude = {

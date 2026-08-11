@@ -33,7 +33,7 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   }
 }
 
-// requireRole(minRole) — passes if the caller's role rank >= minRole rank.
+// requireRole(minRole) passes if the caller's role rank >= minRole rank.
 export function requireRole(minRole: Role) {
   return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) throw new UnauthorizedError();

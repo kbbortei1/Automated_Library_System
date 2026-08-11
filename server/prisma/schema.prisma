@@ -1,4 +1,4 @@
-// BiblioHub — Prisma schema
+// BiblioHub Prisma schema
 // UUID PKs, createdAt/updatedAt everywhere, soft-delete on User/Book/BookCopy.
 
 generator client {
@@ -78,7 +78,7 @@ model User {
   id             String         @id @default(uuid())
   fullName       String
   email          String         @unique
-  identifier     String?        @unique // staff ID / student no / index — alternate login
+  identifier     String?        @unique // staff ID / student no / index, alternate login
   phone          String?
   passwordHash   String
   role           Role           @default(MEMBER)

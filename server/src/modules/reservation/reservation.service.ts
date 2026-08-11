@@ -94,7 +94,7 @@ async function flushReadyNotifications() {
 }
 
 export const ReservationService = {
-  // FR17 — reserve a title. If a copy is free now, the hold goes straight to READY.
+  // FR17: reserve a title. If a copy is free now, the hold goes straight to READY.
   async reserve(userId: string, bookId: string) {
     const result = await prisma.$transaction(async (tx) => {
       const book = await tx.book.findFirst({ where: { id: bookId, deletedAt: null } });
@@ -148,7 +148,7 @@ export const ReservationService = {
     return result;
   },
 
-  // FR19 — cancel. Frees a copy if the hold was READY; re-sequences the queue if PENDING.
+  // FR19: cancel. Frees a copy if the hold was READY; re-sequences the queue if PENDING.
   async cancel(reservationId: string, requesterId: string, isStaff: boolean) {
     await prisma.$transaction(async (tx) => {
       const res = await tx.reservation.findUnique({ where: { id: reservationId } });
@@ -181,7 +181,7 @@ export const ReservationService = {
     return { success: true };
   },
 
-  // FR19 — job: expire READY holds past their window, freeing copies to the next in line.
+  // FR19 job: expire READY holds past their window, freeing copies to the next in line.
   async expireReadyHolds(): Promise<number> {
     const expired = await prisma.$transaction(async (tx) => {
       const due = await tx.reservation.findMany({
@@ -239,7 +239,7 @@ setRenewGuardHook(async (bookId, tx) => {
     where: { bookId, status: ReservationStatus.PENDING },
   });
   if (waiting > 0) {
-    throw new BadRequestError('Cannot renew — other members are waiting for this title');
+    throw new BadRequestError('Cannot renew, other members are waiting for this title');
   }
 });
 

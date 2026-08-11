@@ -35,7 +35,7 @@ export default function Checkout() {
     },
     onSuccess: (loan: { copy: { book: { title: string } }; dueDate: string }) => {
       setResult(
-        `✓ Checked out "${loan.copy.book.title}" — due ${new Date(loan.dueDate).toLocaleDateString()}`,
+        `✓ Checked out "${loan.copy.book.title}", due ${new Date(loan.dueDate).toLocaleDateString()}`,
       );
       setAccession('');
       setError('');

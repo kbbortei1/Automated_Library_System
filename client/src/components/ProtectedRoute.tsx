@@ -16,7 +16,7 @@ export function ProtectedRoute({ minRole }: { minRole?: Role }) {
   if (minRole && !hasRole(minRole)) {
     return (
       <div className="p-10 text-center">
-        <h2 className="text-xl font-semibold text-red-600">403 — Access denied</h2>
+        <h2 className="text-xl font-semibold text-red-600">403 Access denied</h2>
         <p className="mt-2 text-slate-500">You don't have permission to view this page.</p>
       </div>
     );

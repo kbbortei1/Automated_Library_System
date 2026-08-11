@@ -23,7 +23,7 @@ export default function Loans() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StaffHeader title="Loans" subtitle="Circulation journal — active, overdue, and returned." />
+      <StaffHeader title="Loans" subtitle="Circulation journal: active, overdue, and returned." />
 
       <div className="max-w-xs">
         <Select

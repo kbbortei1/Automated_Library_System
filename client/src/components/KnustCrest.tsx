@@ -5,9 +5,9 @@ import { useState } from 'react';
  *
  * Renders the official KNUST emblem from `public/knust-logo.png` when it is
  * present. Until that file is dropped in (and if it ever 404s) we fall back to
- * an original mark built from two emblem motifs — the pot of fire, for the
- * quest for knowledge that must be kept burning, and an open book — so the
- * page never renders a broken image.
+ * an original mark built from two emblem motifs: the pot of fire, for the
+ * quest for knowledge that must be kept burning, and an open book. That
+ * way the page never renders a broken image.
  */
 export function KnustCrest({ className = 'h-14 w-14' }: { className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -26,7 +26,7 @@ export function KnustCrest({ className = 'h-14 w-14' }: { className?: string }) 
   return (
     <svg viewBox="0 0 64 64" role="img" aria-label="KNUST university crest" className={className}>
       <circle cx="32" cy="32" r="31" fill="#0b2f0f" stroke="#f5b301" strokeWidth="2" />
-      {/* Pot of fire — the flame of knowledge. */}
+      {/* Pot of fire, the flame of knowledge. */}
       <path
         d="M32 13c3.4 4.1 5.1 7.4 5.1 10a5.1 5.1 0 0 1-10.2 0c0-2.6 1.7-5.9 5.1-10Z"
         fill="#f5b301"

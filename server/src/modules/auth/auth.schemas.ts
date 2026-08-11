@@ -4,7 +4,7 @@ import { MembershipType } from '@prisma/client';
 export const registerSchema = z.object({
   fullName: z.string().min(2, 'Full name is required').max(120),
   email: z.string().email(),
-  // Staff ID / student number / index — optional alternate login identifier.
+  // Staff ID / student number / index, optional alternate login identifier.
   identifier: z
     .string()
     .min(2)

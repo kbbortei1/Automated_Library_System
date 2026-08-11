@@ -69,7 +69,7 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {error && <Alert>{error}</Alert>}
 
-        {/* Membership type as a segmented control — three fixed options read
+        {/* Membership type as a segmented control, three fixed options read
             better than a dropdown and surface the ID field's meaning. */}
         <fieldset>
           <legend className="mb-1.5 text-sm font-medium text-slate-700">Membership type</legend>

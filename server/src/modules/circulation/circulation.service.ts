@@ -29,7 +29,7 @@ export function setPromoteOnReturnHook(fn: PromoteHook) {
   promoteOnReturn = fn;
 }
 
-// Runs after the return transaction commits — used to dispatch queued notifications (Phase 5/7).
+// Runs after the return transaction commits, used to dispatch queued notifications (Phase 5/7).
 let afterReturnCommit: () => Promise<void> = async () => {};
 export function setAfterReturnCommitHook(fn: () => Promise<void>) {
   afterReturnCommit = fn;

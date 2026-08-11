@@ -131,7 +131,7 @@ export const UserService = {
     });
   },
 
-  // Used when an admin changes a member's membership type — re-resolve their rules.
+  // Used when an admin changes a member's membership type, re-resolve their rules.
   async setMembershipType(userId: string, membershipType: MembershipType) {
     const rules = await this.resolveBorrowingRules(membershipType);
     return prisma.user.update({

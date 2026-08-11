@@ -1,6 +1,6 @@
 # 📚 BiblioHub
 
-Automated Library Management System — a web app with a **member portal** and a **staff/admin back office** over one API.
+Automated Library Management System, a web app with a **member portal** and a **staff/admin back office** over one API.
 
 - **Frontend:** React 18 · Vite · TypeScript · Tailwind · React Router · TanStack Query · Axios · Recharts
 - **Backend:** Node 20 · Express 4 · TypeScript · Prisma · PostgreSQL 15+ · JWT · Zod · Nodemailer · node-cron
@@ -42,7 +42,7 @@ cp server/.env.example server/.env
 #   → edit DATABASE_URL with your Postgres credentials
 #   → set JWT secrets (any non-empty strings in dev)
 
-# (optional) client env — defaults work via Vite proxy
+# (optional) client env, defaults work via Vite proxy
 cp client/.env.example client/.env
 
 # 3. Create the database schema and seed defaults
@@ -100,17 +100,17 @@ The client dev server proxies `/api` to the API, so no CORS setup is needed in d
 
 ## Build status
 
-Phased roadmap — verification gate after each phase.
+Phased roadmap: verification gate after each phase.
 
-- [x] **Phase 0** — Scaffold (both apps boot, Prisma↔Postgres, health check)
-- [x] **Phase 1** — Auth & RBAC (register/login/refresh, JWT, bcrypt, role middleware, auth UI)
-- [x] **Phase 2** — Catalogue & inventory (book CRUD, copies, reusable lookups)
-- [x] **Phase 3** — Search (public catalogue, filters, book detail live availability)
-- [x] **Phase 4** — Circulation (transactional checkout/return/renew, overdue sweep)
-- [x] **Phase 5** — Reservations (FIFO queue, promote-on-return, cancel/expire)
-- [x] **Phase 6** — Fines & enforcement (auto-fine, pay/waive, defaulters, suspend)
-- [x] **Phase 7** — Notifications & email + reports (in-app + email, cron jobs, dashboard charts)
-- [x] **Phase 8** — Polish (responsive nav, error boundary, empty/loading states, tests, docs)
+- [x] **Phase 0**: Scaffold (both apps boot, Prisma↔Postgres, health check)
+- [x] **Phase 1**: Auth & RBAC (register/login/refresh, JWT, bcrypt, role middleware, auth UI)
+- [x] **Phase 2**: Catalogue & inventory (book CRUD, copies, reusable lookups)
+- [x] **Phase 3**: Search (public catalogue, filters, book detail live availability)
+- [x] **Phase 4**: Circulation (transactional checkout/return/renew, overdue sweep)
+- [x] **Phase 5**: Reservations (FIFO queue, promote-on-return, cancel/expire)
+- [x] **Phase 6**: Fines & enforcement (auto-fine, pay/waive, defaulters, suspend)
+- [x] **Phase 7**: Notifications & email + reports (in-app + email, cron jobs, dashboard charts)
+- [x] **Phase 8**: Polish (responsive nav, error boundary, empty/loading states, tests, docs)
 
 ---
 
@@ -123,7 +123,7 @@ RBAC is enforced server-side; **Staff** = LIBRARIAN+, **Admin** = ADMIN only.
 |---|---|---|
 | Health | `GET /health` | public |
 | Auth | `POST /auth/register · /auth/login · /auth/refresh` | public |
-| ↳ login | body `{ identifier, password }` — `identifier` = email **or** member ID | public |
+| ↳ login | body `{ identifier, password }`, `identifier` = email **or** member ID | public |
 | Profile | `GET/PATCH /users/me`, `POST /users/me/change-password` | auth |
 | Members | `GET /users`, `PATCH /users/:id/status` | staff |
 | Roles | `PATCH /users/:id/role · /users/:id/membership` | admin |

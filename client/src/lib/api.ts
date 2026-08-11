@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Called when refresh fails — set by AuthProvider to force logout.
+// Called when refresh fails, set by AuthProvider to force logout.
 let onAuthFailure: () => void = () => {};
 export function setAuthFailureHandler(fn: () => void) {
   onAuthFailure = fn;

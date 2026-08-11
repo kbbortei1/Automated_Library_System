@@ -4,7 +4,7 @@ import { env } from '../config/env.js';
 let transporter: Transporter | null = null;
 
 // Lazily build a transport. With SMTP_* configured we send for real; otherwise we use
-// Nodemailer's JSON transport and log to the console (dev/test) — no network required.
+// Nodemailer's JSON transport and log to the console (dev/test), no network required.
 function getTransporter(): Transporter {
   if (transporter) return transporter;
 

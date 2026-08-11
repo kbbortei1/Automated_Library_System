@@ -1,6 +1,6 @@
 import { prisma } from '../../lib/prisma.js';
 
-// Reusable lookups (Author, Category, Publisher) — find-or-create by unique name, no duplicates.
+// Reusable lookups (Author, Category, Publisher): find-or-create by unique name, no duplicates.
 export const LookupService = {
   // --- Reads (for dropdowns / management lists) ---
   listAuthors: () => prisma.author.findMany({ orderBy: { name: 'asc' } }),

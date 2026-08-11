@@ -16,7 +16,7 @@ export default function Dashboard() {
         <p className="text-slate-500">
           {user.role === 'MEMBER'
             ? 'Browse the catalogue, manage your loans, reservations and fines.'
-            : 'Staff console — circulation, catalogue and member management.'}
+            : 'Staff console: circulation, catalogue and member management.'}
         </p>
       </div>
 
