@@ -4,6 +4,7 @@ import { useAuth } from '../lib/auth';
 import { NotificationBell } from './NotificationBell';
 import { KnustCrest } from './KnustCrest';
 import { ThemeToggle } from './ThemeToggle';
+import { CloseIcon, MenuIcon } from './icons';
 import { Avatar } from './ui';
 
 const LINKS = [
@@ -70,12 +71,15 @@ export function MemberLayout() {
             >
               Logout
             </button>
+            {/* Swapping the glyph for the state makes it clear the button
+                closes the menu it just opened. */}
             <button
               onClick={() => setOpen((o) => !o)}
-              className="rounded-lg p-1.5 text-xl text-chrome-muted md:hidden"
-              aria-label="Menu"
+              className="rounded-lg p-2 text-chrome-muted transition hover:bg-white/10 hover:text-white md:hidden"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
             >
-              ☰
+              {open ? <CloseIcon /> : <MenuIcon />}
             </button>
           </div>
         </nav>
