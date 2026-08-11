@@ -39,12 +39,12 @@ export default function Members() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.items.length ? (
-          <p className="p-6 text-slate-500">No members found.</p>
+          <p className="p-6 text-fg-muted">No members found.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Email</th>
@@ -56,11 +56,11 @@ export default function Members() {
             </thead>
             <tbody>
               {data.items.map((m) => (
-                <tr key={m.id} className="border-b border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{m.fullName}</td>
-                  <td className="px-4 py-3 text-slate-600">{m.email}</td>
-                  <td className="px-4 py-3 text-slate-600">{m.role}</td>
-                  <td className="px-4 py-3 text-slate-600">{m.membershipType}</td>
+                <tr key={m.id} className="border-b border-border-subtle">
+                  <td className="px-4 py-3 font-medium text-fg">{m.fullName}</td>
+                  <td className="px-4 py-3 text-fg-muted">{m.email}</td>
+                  <td className="px-4 py-3 text-fg-muted">{m.role}</td>
+                  <td className="px-4 py-3 text-fg-muted">{m.membershipType}</td>
                   <td className="px-4 py-3">
                     <Badge tone={m.status === 'ACTIVE' ? 'green' : 'red'}>{m.status}</Badge>
                   </td>

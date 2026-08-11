@@ -33,9 +33,9 @@ function QuickAction({ to, title, desc }: { to: string; title: string; desc: str
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-lg bg-white/10 px-4 py-3 transition hover:bg-white/20"
+      className="flex items-center gap-3 rounded-lg bg-surface/10 px-4 py-3 transition hover:bg-surface/20"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-white">
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface/15 text-white">
         <Icon d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
       </span>
       <span>
@@ -79,10 +79,10 @@ export default function StaffDashboard() {
         <div className="relative hidden sm:block">
           <input
             placeholder="Search books, members…"
-            className="w-64 rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+            className="w-64 rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
           <svg
-            className="absolute left-3 top-2.5 h-4 w-4 text-slate-400"
+            className="absolute left-3 top-2.5 h-4 w-4 text-fg-subtle"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -94,7 +94,7 @@ export default function StaffDashboard() {
       </StaffHeader>
 
       {isLoading || !stats ? (
-        <p className="text-slate-500">Loading dashboard…</p>
+        <p className="text-fg-muted">Loading dashboard…</p>
       ) : (
         <div className="flex flex-col gap-6">
           {/* KPIs */}
@@ -103,7 +103,7 @@ export default function StaffDashboard() {
             <StatCard
               label="Overdue Loans"
               value={stats.overdueLoans}
-              accent="text-red-600"
+              accent="text-red-600 dark:text-red-400"
               hint="Requires action"
               icon={<Icon d={ICONS.overdue} />}
             />
@@ -123,8 +123,8 @@ export default function StaffDashboard() {
           {/* Chart + quick actions */}
           <div className="grid gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">
-              <h2 className="text-lg font-bold text-navy-800">New Members</h2>
-              <p className="mb-4 text-sm text-slate-500">Registrations (last 6 months)</p>
+              <h2 className="text-lg font-bold text-fg">New Members</h2>
+              <p className="mb-4 text-sm text-fg-muted">Registrations (last 6 months)</p>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={stats.newMemberTrend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" />
@@ -137,7 +137,7 @@ export default function StaffDashboard() {
             </Card>
 
             <div className="flex flex-col gap-6">
-              <div className="rounded-xl bg-navy-800 p-5 shadow-card">
+              <div className="rounded-xl bg-accent-hover p-5 shadow-card">
                 <h2 className="text-lg font-bold text-white">Quick Actions</h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <QuickAction to="/staff/circulation" title="Checkout Book" desc="Scan ISBN or enter member ID" />
@@ -147,18 +147,18 @@ export default function StaffDashboard() {
               </div>
 
               <Card>
-                <h2 className="mb-4 text-lg font-bold text-navy-800">Most Borrowed</h2>
+                <h2 className="mb-4 text-lg font-bold text-fg">Most Borrowed</h2>
                 {topBorrowed.length ? (
                   <div className="space-y-3">
                     {topBorrowed.map((b) => (
                       <div key={b.book.id}>
                         <div className="mb-1 flex items-center justify-between text-sm">
-                          <span className="truncate pr-2 text-slate-700">{b.book.title}</span>
-                          <span className="font-semibold text-slate-800">{b.borrowCount}</span>
+                          <span className="truncate pr-2 text-fg">{b.book.title}</span>
+                          <span className="font-semibold text-fg">{b.borrowCount}</span>
                         </div>
-                        <div className="h-2 rounded-full bg-slate-100">
+                        <div className="h-2 rounded-full bg-surface-3">
                           <div
-                            className="h-2 rounded-full bg-navy-700"
+                            className="h-2 rounded-full bg-accent"
                             style={{ width: `${(b.borrowCount / maxBorrow) * 100}%` }}
                           />
                         </div>
@@ -166,7 +166,7 @@ export default function StaffDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500">No loans recorded yet.</p>
+                  <p className="text-sm text-fg-muted">No loans recorded yet.</p>
                 )}
               </Card>
             </div>
@@ -176,19 +176,19 @@ export default function StaffDashboard() {
           <Card className="p-0">
             <div className="flex items-center justify-between px-6 pt-6">
               <div>
-                <h2 className="text-lg font-bold text-navy-800">Needs Attention</h2>
-                <p className="text-sm text-slate-500">Overdue items requiring member contact</p>
+                <h2 className="text-lg font-bold text-fg">Needs Attention</h2>
+                <p className="text-sm text-fg-muted">Overdue items requiring member contact</p>
               </div>
-              <Link to="/staff/defaulters" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+              <Link to="/staff/defaulters" className="text-sm font-semibold text-accent hover:text-accent">
                 View All Defaulters
               </Link>
             </div>
             <div className="mt-4 overflow-x-auto">
               {!overdue?.items.length ? (
-                <p className="px-6 pb-6 text-sm text-slate-500">No overdue items. 🎉</p>
+                <p className="px-6 pb-6 text-sm text-fg-muted">No overdue items. 🎉</p>
               ) : (
                 <table className="w-full text-left text-sm">
-                  <thead className="border-y border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+                  <thead className="border-y border-border-subtle bg-surface-2 text-xs uppercase tracking-wide text-fg-subtle">
                     <tr>
                       <th className="px-6 py-3 font-medium">Member</th>
                       <th className="px-6 py-3 font-medium">Book Title</th>
@@ -200,21 +200,21 @@ export default function StaffDashboard() {
                     {overdue.items.map((l) => {
                       const d = daysOverdue(l.dueDate);
                       return (
-                        <tr key={l.id} className="border-b border-slate-50 last:border-0">
+                        <tr key={l.id} className="border-b border-surface-2 last:border-0">
                           <td className="px-6 py-3">
                             <div className="flex items-center gap-3">
                               <Avatar name={l.user.fullName} />
                               <div>
-                                <div className="font-medium text-slate-800">{l.user.fullName}</div>
-                                <div className="text-xs text-slate-400">{l.user.email}</div>
+                                <div className="font-medium text-fg">{l.user.fullName}</div>
+                                <div className="text-xs text-fg-subtle">{l.user.email}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-3 text-slate-600">{l.copy.book.title}</td>
+                          <td className="px-6 py-3 text-fg-muted">{l.copy.book.title}</td>
                           <td className="px-6 py-3">
                             <Badge tone={d > 7 ? 'red' : 'amber'}>{d} {d === 1 ? 'Day' : 'Days'}</Badge>
                           </td>
-                          <td className="px-6 py-3 font-semibold text-red-600">
+                          <td className="px-6 py-3 font-semibold text-red-600 dark:text-red-400">
                             {money(d * fineRate)}
                           </td>
                         </tr>

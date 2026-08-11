@@ -18,7 +18,7 @@ interface CopyLookup {
 
 function StepBadge({ n }: { n: number }) {
   return (
-    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-navy-700 text-sm font-bold text-white">
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
       {n}
     </span>
   );
@@ -130,7 +130,7 @@ export default function Circulation() {
             value={returnAccession}
             onChange={(e) => setReturnAccession(e.target.value)}
             placeholder="Scan accession for return"
-            className="w-56 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+            className="w-56 rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
           <Button variant="secondary" type="submit" disabled={!returnAccession || quickReturn.isPending}>
             Quick Return
@@ -145,7 +145,7 @@ export default function Circulation() {
         <Card>
           <div className="mb-4 flex items-center gap-3">
             <StepBadge n={1} />
-            <h2 className="text-lg font-bold text-navy-800">Identify Member</h2>
+            <h2 className="text-lg font-bold text-fg">Identify Member</h2>
           </div>
           <input
             value={memberSearch}
@@ -154,21 +154,21 @@ export default function Circulation() {
               setMember(null);
             }}
             placeholder="Search by name or member ID…"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+            className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
 
           {!member && members?.items?.length ? (
-            <ul className="mt-2 divide-y divide-slate-100 rounded-lg border border-slate-200">
+            <ul className="mt-2 divide-y divide-border-subtle rounded-lg border border-border">
               {members.items.slice(0, 5).map((m) => (
                 <li key={m.id}>
                   <button
                     onClick={() => setMember(m)}
-                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-slate-50"
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-surface-2"
                   >
                     <Avatar name={m.fullName} />
                     <span className="flex-1">
-                      <span className="font-medium text-slate-800">{m.fullName}</span>
-                      <span className="block text-xs text-slate-400">
+                      <span className="font-medium text-fg">{m.fullName}</span>
+                      <span className="block text-xs text-fg-subtle">
                         {m.identifier ?? m.email}
                       </span>
                     </span>
@@ -180,36 +180,36 @@ export default function Circulation() {
           ) : null}
 
           {member && (
-            <div className="mt-4 rounded-xl border border-slate-200 p-4">
+            <div className="mt-4 rounded-xl border border-border p-4">
               <div className="flex items-center gap-3">
                 <Avatar name={member.fullName} className="h-12 w-12 text-sm" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-navy-800">{member.fullName}</span>
+                    <span className="font-bold text-fg">{member.fullName}</span>
                     <Badge tone={member.status === 'ACTIVE' ? 'green' : 'red'}>{member.status}</Badge>
                   </div>
-                  <div className="text-xs text-slate-400">{member.identifier ?? member.email}</div>
+                  <div className="text-xs text-fg-subtle">{member.identifier ?? member.email}</div>
                 </div>
-                <button onClick={() => setMember(null)} className="text-xs text-brand-600 hover:underline">
+                <button onClick={() => setMember(null)} className="text-xs text-accent hover:underline">
                   Change
                 </button>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-lg bg-slate-50 p-3">
-                  <div className="text-xs uppercase text-slate-400">Current Loans</div>
-                  <div className="font-semibold text-slate-800">
+                <div className="rounded-lg bg-surface-2 p-3">
+                  <div className="text-xs uppercase text-fg-subtle">Current Loans</div>
+                  <div className="font-semibold text-fg">
                     {memberLoans?.total ?? '-'} / {member.borrowingLimit}
                   </div>
                 </div>
-                <div className="rounded-lg bg-slate-50 p-3">
-                  <div className="text-xs uppercase text-slate-400">Eligibility</div>
-                  <div className={`font-semibold ${eligibility?.eligible ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="rounded-lg bg-surface-2 p-3">
+                  <div className="text-xs uppercase text-fg-subtle">Eligibility</div>
+                  <div className={`font-semibold ${eligibility?.eligible ? 'text-green-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                     {eligibility ? (eligibility.eligible ? 'Eligible' : 'Blocked') : '…'}
                   </div>
                 </div>
               </div>
               {eligibility && !eligibility.eligible && (
-                <p className="mt-2 text-xs text-red-600">{eligibility.reasons.join('; ')}</p>
+                <p className="mt-2 text-xs text-red-600 dark:text-red-400">{eligibility.reasons.join('; ')}</p>
               )}
             </div>
           )}
@@ -219,7 +219,7 @@ export default function Circulation() {
         <Card className={member && eligibility?.eligible ? '' : 'opacity-60'}>
           <div className="mb-4 flex items-center gap-3">
             <StepBadge n={2} />
-            <h2 className="text-lg font-bold text-navy-800">Scan Book Copy</h2>
+            <h2 className="text-lg font-bold text-fg">Scan Book Copy</h2>
           </div>
           <form
             onSubmit={(e) => {
@@ -232,20 +232,20 @@ export default function Circulation() {
               onChange={(e) => setAccession(e.target.value)}
               disabled={!member || !eligibility?.eligible}
               placeholder="Scan accession number or barcode…"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 disabled:bg-slate-50"
+              className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:bg-surface-2"
             />
           </form>
-          {copyError && <p className="mt-2 text-xs text-red-600">{copyError}</p>}
+          {copyError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{copyError}</p>}
 
           {copy && (
-            <div className="mt-4 rounded-xl border border-slate-200 p-4">
+            <div className="mt-4 rounded-xl border border-border p-4">
               <div className="flex gap-4">
-                <div className="aspect-[2/3] w-16 shrink-0 overflow-hidden rounded-md bg-slate-100">
+                <div className="aspect-[2/3] w-16 shrink-0 overflow-hidden rounded-md bg-surface-3">
                   <BookCover isbn={copy.book.isbn} title={copy.book.title} size="M" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
-                    <h3 className="font-display text-lg font-bold leading-snug text-navy-800">
+                    <h3 className="font-display text-lg font-bold leading-snug text-fg">
                       {copy.book.title}
                     </h3>
                     <Badge tone={copy.status === 'AVAILABLE' ? 'green' : 'amber'}>{copy.status}</Badge>
@@ -253,13 +253,13 @@ export default function Circulation() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">
+                <span className="rounded-md bg-surface-3 px-2 py-1 text-fg-muted">
                   COPY #{copy.accessionNumber}
                 </span>
-                <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">
+                <span className="rounded-md bg-surface-3 px-2 py-1 text-fg-muted">
                   SHELF {copy.shelfLocation}
                 </span>
-                <span className="rounded-md bg-slate-100 px-2 py-1 text-slate-600">ISBN {copy.book.isbn}</span>
+                <span className="rounded-md bg-surface-3 px-2 py-1 text-fg-muted">ISBN {copy.book.isbn}</span>
               </div>
               <Button
                 variant="accent"
@@ -277,17 +277,17 @@ export default function Circulation() {
       {/* Recent activity */}
       <Card className="mt-6 p-0">
         <div className="flex items-center justify-between px-6 pt-6">
-          <h2 className="text-lg font-bold text-navy-800">Recent Activity</h2>
-          <Link to="/staff/loans" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <h2 className="text-lg font-bold text-fg">Recent Activity</h2>
+          <Link to="/staff/loans" className="text-sm font-semibold text-accent hover:text-accent">
             View Journal
           </Link>
         </div>
         <div className="mt-4 overflow-x-auto">
           {!activity?.items.length ? (
-            <p className="px-6 pb-6 text-sm text-slate-500">No recent circulation activity.</p>
+            <p className="px-6 pb-6 text-sm text-fg-muted">No recent circulation activity.</p>
           ) : (
             <table className="w-full text-left text-sm">
-              <thead className="border-y border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+              <thead className="border-y border-border-subtle bg-surface-2 text-xs uppercase tracking-wide text-fg-subtle">
                 <tr>
                   <th className="px-6 py-3 font-medium">Transaction</th>
                   <th className="px-6 py-3 font-medium">Subject</th>
@@ -299,13 +299,13 @@ export default function Circulation() {
                 {activity.items.map((l) => {
                   const returned = Boolean(l.returnDate);
                   return (
-                    <tr key={l.id} className="border-b border-slate-50 last:border-0">
+                    <tr key={l.id} className="border-b border-surface-2 last:border-0">
                       <td className="px-6 py-3">
                         <Badge tone={returned ? 'green' : 'gray'}>{returned ? 'RETURN' : 'CHECKOUT'}</Badge>
                       </td>
-                      <td className="px-6 py-3 text-slate-700">{l.copy.book.title}</td>
-                      <td className="px-6 py-3 text-slate-600">{l.user.fullName}</td>
-                      <td className="px-6 py-3 text-slate-500">
+                      <td className="px-6 py-3 text-fg">{l.copy.book.title}</td>
+                      <td className="px-6 py-3 text-fg-muted">{l.user.fullName}</td>
+                      <td className="px-6 py-3 text-fg-muted">
                         {formatDate(returned ? l.returnDate : l.checkoutDate)}
                       </td>
                     </tr>

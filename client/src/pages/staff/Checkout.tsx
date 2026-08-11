@@ -51,7 +51,7 @@ export default function Checkout() {
       <StaffHeader title="Checkout" subtitle="Issue a copy to a member." />
 
       <Card>
-        <h2 className="mb-3 text-lg font-semibold text-slate-700">1. Find member</h2>
+        <h2 className="mb-3 text-lg font-semibold text-fg">1. Find member</h2>
         <Input
           placeholder="Search member by name or email…"
           value={memberSearch}
@@ -61,17 +61,17 @@ export default function Checkout() {
           }}
         />
         {!selected && members?.items?.length ? (
-          <ul className="mt-3 divide-y divide-slate-100 rounded-md border border-slate-200">
+          <ul className="mt-3 divide-y divide-border-subtle rounded-md border border-border">
             {members.items.slice(0, 6).map((m) => (
               <li key={m.id}>
                 <button
                   onClick={() => setSelected(m)}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-50"
+                  className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-surface-2"
                 >
                   <span>
-                    {m.fullName} <span className="text-slate-400">· {m.email}</span>
+                    {m.fullName} <span className="text-fg-subtle">· {m.email}</span>
                   </span>
-                  <span className="text-xs text-slate-400">{m.membershipType}</span>
+                  <span className="text-xs text-fg-subtle">{m.membershipType}</span>
                 </button>
               </li>
             ))}
@@ -79,14 +79,14 @@ export default function Checkout() {
         ) : null}
 
         {selected && (
-          <div className="mt-3 rounded-md bg-slate-50 p-3 text-sm">
+          <div className="mt-3 rounded-md bg-surface-2 p-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="font-medium text-slate-800">
+              <span className="font-medium text-fg">
                 {selected.fullName} · {selected.email}
               </span>
               <button
                 onClick={() => setSelected(null)}
-                className="text-xs text-brand-600 hover:underline"
+                className="text-xs text-accent hover:underline"
               >
                 Change
               </button>
@@ -95,7 +95,7 @@ export default function Checkout() {
               (eligibility.eligible ? (
                 <p className="mt-1 text-green-700">✓ Eligible to borrow</p>
               ) : (
-                <p className="mt-1 text-red-600">✗ {eligibility.reasons.join('; ')}</p>
+                <p className="mt-1 text-red-600 dark:text-red-400">✗ {eligibility.reasons.join('; ')}</p>
               ))}
           </div>
         )}
@@ -103,7 +103,7 @@ export default function Checkout() {
 
       {selected && eligibility?.eligible && (
         <Card>
-          <h2 className="mb-3 text-lg font-semibold text-slate-700">2. Scan copy</h2>
+          <h2 className="mb-3 text-lg font-semibold text-fg">2. Scan copy</h2>
           <form
             onSubmit={(e) => {
               e.preventDefault();

@@ -34,34 +34,34 @@ export default function BookDetail() {
     onError: (e) => setMsg({ kind: 'error', text: apiErrorMessage(e) }),
   });
 
-  if (isLoading) return <p className="text-slate-500">Loading…</p>;
+  if (isLoading) return <p className="text-fg-muted">Loading…</p>;
   if (isError || !book) return <Alert>Book not found.</Alert>;
 
   const available = book.availableCopies > 0;
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/catalogue" className="text-sm text-knust-700 hover:underline">
+      <Link to="/catalogue" className="text-sm text-accent hover:underline">
         ← Back to catalogue
       </Link>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="md:col-span-1">
-          <div className="mx-auto aspect-[2/3] w-full max-w-[220px] overflow-hidden rounded-lg bg-slate-100 shadow-card">
+          <div className="mx-auto aspect-[2/3] w-full max-w-[220px] overflow-hidden rounded-lg bg-surface-3 shadow-card">
             <BookCover isbn={book.isbn} coverImageUrl={book.coverImageUrl} title={book.title} size="L" />
           </div>
         </Card>
 
         <div className="md:col-span-2">
           <Card>
-            <h1 className="font-display text-2xl font-bold text-knust-900">{book.title}</h1>
-            <p className="mt-1 text-slate-600">
+            <h1 className="font-display text-2xl font-bold text-fg">{book.title}</h1>
+            <p className="mt-1 text-fg-muted">
               by {book.authors.map((a) => a.name).join(', ')}
             </p>
 
             <span
               className={`mt-4 inline-block rounded-full px-3 py-1 text-sm font-medium ${
-                available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                available ? 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
               }`}
             >
               {available
@@ -71,33 +71,33 @@ export default function BookDetail() {
 
             <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
               <div>
-                <dt className="text-slate-400">ISBN</dt>
-                <dd className="font-medium text-slate-700">{book.isbn}</dd>
+                <dt className="text-fg-subtle">ISBN</dt>
+                <dd className="font-medium text-fg">{book.isbn}</dd>
               </div>
               <div>
-                <dt className="text-slate-400">Category</dt>
-                <dd className="font-medium text-slate-700">{book.category.name}</dd>
+                <dt className="text-fg-subtle">Category</dt>
+                <dd className="font-medium text-fg">{book.category.name}</dd>
               </div>
               <div>
-                <dt className="text-slate-400">Publisher</dt>
-                <dd className="font-medium text-slate-700">{book.publisher.name}</dd>
+                <dt className="text-fg-subtle">Publisher</dt>
+                <dd className="font-medium text-fg">{book.publisher.name}</dd>
               </div>
               <div>
-                <dt className="text-slate-400">Published</dt>
-                <dd className="font-medium text-slate-700">{book.publicationYear}</dd>
+                <dt className="text-fg-subtle">Published</dt>
+                <dd className="font-medium text-fg">{book.publicationYear}</dd>
               </div>
               <div>
-                <dt className="text-slate-400">Language</dt>
-                <dd className="font-medium text-slate-700">{book.language ?? '-'}</dd>
+                <dt className="text-fg-subtle">Language</dt>
+                <dd className="font-medium text-fg">{book.language ?? '-'}</dd>
               </div>
               <div>
-                <dt className="text-slate-400">Edition</dt>
-                <dd className="font-medium text-slate-700">{book.edition ?? '-'}</dd>
+                <dt className="text-fg-subtle">Edition</dt>
+                <dd className="font-medium text-fg">{book.edition ?? '-'}</dd>
               </div>
             </dl>
 
             {book.description && (
-              <p className="mt-6 text-sm leading-relaxed text-slate-600">{book.description}</p>
+              <p className="mt-6 text-sm leading-relaxed text-fg-muted">{book.description}</p>
             )}
 
             {/* Members reserve titles; staff manage circulation at the desk. */}
@@ -109,7 +109,7 @@ export default function BookDetail() {
                     {available ? 'Reserve & hold a copy' : 'Join the reservation queue'}
                   </Button>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-fg-subtle">
                   {available
                     ? 'A copy will be held for you to collect at the desk.'
                     : 'You will be promoted to the front of the queue when a copy is returned.'}

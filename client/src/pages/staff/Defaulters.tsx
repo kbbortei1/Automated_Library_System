@@ -36,12 +36,12 @@ export default function Defaulters() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.length ? (
-          <p className="p-6 text-slate-500">No defaulters. 🎉</p>
+          <p className="p-6 text-fg-muted">No defaulters. 🎉</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Member</th>
                 <th className="px-4 py-3 font-medium">Outstanding</th>
@@ -53,22 +53,22 @@ export default function Defaulters() {
             </thead>
             <tbody>
               {data.map((d) => (
-                <tr key={d.id} className="border-b border-slate-100">
+                <tr key={d.id} className="border-b border-border-subtle">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-slate-800">{d.fullName}</div>
-                    <div className="text-xs text-slate-400">{d.email}</div>
+                    <div className="font-medium text-fg">{d.fullName}</div>
+                    <div className="text-xs text-fg-subtle">{d.email}</div>
                   </td>
-                  <td className="px-4 py-3 font-semibold text-red-600">
+                  <td className="px-4 py-3 font-semibold text-red-600 dark:text-red-400">
                     {money(d.outstandingFines)}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{d.unpaidFineCount}</td>
-                  <td className="px-4 py-3 text-slate-600">{d.overdueLoans}</td>
+                  <td className="px-4 py-3 text-fg-muted">{d.unpaidFineCount}</td>
+                  <td className="px-4 py-3 text-fg-muted">{d.overdueLoans}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                         d.status === 'ACTIVE'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
+                          ? 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                          : 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
                       }`}
                     >
                       {d.status}

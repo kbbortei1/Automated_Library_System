@@ -64,14 +64,14 @@ export default function Login() {
       </form>
 
       <div className="mt-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs uppercase tracking-wide text-slate-400">New here</span>
-        <span className="h-px flex-1 bg-slate-200" />
+        <span className="h-px flex-1 bg-surface-3" />
+        <span className="text-xs uppercase tracking-wide text-fg-subtle">New here</span>
+        <span className="h-px flex-1 bg-surface-3" />
       </div>
 
       <Link
         to="/register"
-        className="mt-4 flex w-full items-center justify-center rounded-lg border border-knust-200 bg-knust-50 px-4 py-2.5 text-sm font-semibold text-knust-700 transition hover:bg-knust-100"
+        className="mt-4 flex w-full items-center justify-center rounded-lg border border-accent/40 bg-accent-soft px-4 py-2.5 text-sm font-semibold text-accent transition hover:bg-accent-soft"
       >
         Create a library account
       </Link>

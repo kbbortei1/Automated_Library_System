@@ -26,7 +26,7 @@ export default function Notifications() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-knust-900">Notifications</h1>
+        <h1 className="font-display text-2xl font-bold text-fg">Notifications</h1>
         {(data?.unread ?? 0) > 0 && (
           <Button variant="secondary" onClick={() => markAll.mutate()}>
             Mark all read
@@ -35,10 +35,10 @@ export default function Notifications() {
       </div>
 
       {isLoading ? (
-        <p className="text-slate-500">Loading…</p>
+        <p className="text-fg-muted">Loading…</p>
       ) : !data?.items.length ? (
         <Card>
-          <p className="text-center text-slate-500">No notifications yet.</p>
+          <p className="text-center text-fg-muted">No notifications yet.</p>
         </Card>
       ) : (
         <div className="flex flex-col gap-3">
@@ -52,12 +52,12 @@ export default function Notifications() {
                 className="block w-full text-left"
               >
                 <div className="flex items-center justify-between">
-                  <span className={`font-semibold ${n.read ? 'text-slate-600' : 'text-slate-900'}`}>
+                  <span className={`font-semibold ${n.read ? 'text-fg-muted' : 'text-fg'}`}>
                     {n.title}
                   </span>
-                  <span className="text-xs text-slate-400">{formatDate(n.createdAt)}</span>
+                  <span className="text-xs text-fg-subtle">{formatDate(n.createdAt)}</span>
                 </div>
-                <p className="mt-1 text-sm text-slate-600">{n.message}</p>
+                <p className="mt-1 text-sm text-fg-muted">{n.message}</p>
               </button>
             </Card>
           ))}

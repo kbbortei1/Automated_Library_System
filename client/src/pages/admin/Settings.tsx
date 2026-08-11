@@ -36,22 +36,22 @@ function Field({
   const meta = FIELD_META[k] ?? { label: k, helper: '' };
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium text-slate-700">{meta.label}</label>
+      <label className="mb-1.5 block text-sm font-medium text-fg">{meta.label}</label>
       <div className="relative">
         {meta.prefix && (
-          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400">
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-fg-subtle">
             {meta.prefix}
           </span>
         )}
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`w-full rounded-lg border border-slate-300 bg-slate-50 py-2.5 text-sm outline-none focus:border-navy-500 focus:bg-white focus:ring-2 focus:ring-navy-500/20 ${
+          className={`w-full rounded-lg border border-border bg-surface-2 py-2.5 text-sm outline-none focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent/20 ${
             meta.prefix ? 'pl-12 pr-3.5' : 'px-3.5'
           }`}
         />
       </div>
-      {meta.helper && <p className="mt-1 text-xs italic text-slate-400">{meta.helper}</p>}
+      {meta.helper && <p className="mt-1 text-xs italic text-fg-subtle">{meta.helper}</p>}
     </div>
   );
 }
@@ -68,12 +68,12 @@ function SectionCard({
   return (
     <Card className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-50 text-navy-700">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-accent">
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
             <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
           </svg>
         </span>
-        <h2 className="text-lg font-bold text-navy-800">{title}</h2>
+        <h2 className="text-lg font-bold text-fg">{title}</h2>
       </div>
       {children}
     </Card>
@@ -171,12 +171,12 @@ export default function Settings() {
         {/* Staff & user roles */}
         <Card className="p-0">
           <div className="px-6 pt-6">
-            <h2 className="text-lg font-bold text-navy-800">Staff &amp; User Roles</h2>
-            <p className="text-sm text-slate-500">Manage permissions for staff members.</p>
+            <h2 className="text-lg font-bold text-fg">Staff &amp; User Roles</h2>
+            <p className="text-sm text-fg-muted">Manage permissions for staff members.</p>
           </div>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-y border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-400">
+              <thead className="border-y border-border-subtle bg-surface-2 text-xs uppercase tracking-wide text-fg-subtle">
                 <tr>
                   <th className="px-6 py-3 font-medium">Name</th>
                   <th className="px-6 py-3 font-medium">Email</th>
@@ -186,15 +186,15 @@ export default function Settings() {
               </thead>
               <tbody>
                 {staffMembers.map((u) => (
-                  <tr key={u.id} className="border-b border-slate-50 last:border-0">
+                  <tr key={u.id} className="border-b border-surface-2 last:border-0">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
                         <Avatar name={u.fullName} />
-                        <span className="font-medium text-slate-800">{u.fullName}</span>
+                        <span className="font-medium text-fg">{u.fullName}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-slate-600">{u.email}</td>
-                    <td className="px-6 py-3 text-slate-500">{formatDate(u.createdAt)}</td>
+                    <td className="px-6 py-3 text-fg-muted">{u.email}</td>
+                    <td className="px-6 py-3 text-fg-muted">{formatDate(u.createdAt)}</td>
                     <td className="px-6 py-3">
                       <Select
                         value={u.role}

@@ -7,11 +7,11 @@ import { formatDate } from '../../lib/format';
 import type { Reservation, ReservationStatus } from '../../types';
 
 const STATUS_STYLES: Record<ReservationStatus, string> = {
-  PENDING: 'bg-amber-100 text-amber-700',
-  READY: 'bg-green-100 text-green-700',
-  FULFILLED: 'bg-slate-200 text-slate-700',
-  CANCELLED: 'bg-slate-200 text-slate-500',
-  EXPIRED: 'bg-red-100 text-red-700',
+  PENDING: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+  READY: 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+  FULFILLED: 'bg-surface-3 text-fg',
+  CANCELLED: 'bg-surface-3 text-fg-muted',
+  EXPIRED: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
 };
 
 export default function ReservationQueue() {
@@ -58,12 +58,12 @@ export default function ReservationQueue() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.length ? (
-          <p className="p-6 text-slate-500">No reservations.</p>
+          <p className="p-6 text-fg-muted">No reservations.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
                 <th className="px-4 py-3 font-medium">Member</th>
@@ -75,10 +75,10 @@ export default function ReservationQueue() {
             </thead>
             <tbody>
               {data.map((r) => (
-                <tr key={r.id} className="border-b border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{r.book.title}</td>
-                  <td className="px-4 py-3 text-slate-600">{r.user.fullName}</td>
-                  <td className="px-4 py-3 text-slate-600">
+                <tr key={r.id} className="border-b border-border-subtle">
+                  <td className="px-4 py-3 font-medium text-fg">{r.book.title}</td>
+                  <td className="px-4 py-3 text-fg-muted">{r.user.fullName}</td>
+                  <td className="px-4 py-3 text-fg-muted">
                     {r.status === 'PENDING' ? `#${r.queuePosition}` : '-'}
                   </td>
                   <td className="px-4 py-3">
@@ -88,7 +88,7 @@ export default function ReservationQueue() {
                       {r.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-fg-muted">
                     {r.status === 'READY' ? formatDate(r.expiresAt) : '-'}
                   </td>
                   <td className="px-4 py-3">

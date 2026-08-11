@@ -41,10 +41,10 @@ export default function Profile() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="font-display text-2xl font-bold text-knust-900">Profile</h1>
+      <h1 className="font-display text-2xl font-bold text-fg">Profile</h1>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-slate-700">Account details</h2>
+        <h2 className="mb-4 text-lg font-semibold text-fg">Account details</h2>
         <form onSubmit={saveProfile} className="flex flex-col gap-4">
           {profileMsg && <Alert kind={profileMsg.kind}>{profileMsg.text}</Alert>}
           <Input label="Email" value={user.email} disabled />
@@ -58,7 +58,7 @@ export default function Profile() {
       </Card>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-slate-700">Change password</h2>
+        <h2 className="mb-4 text-lg font-semibold text-fg">Change password</h2>
         <form onSubmit={changePassword} className="flex flex-col gap-4">
           {pwMsg && <Alert kind={pwMsg.kind}>{pwMsg.text}</Alert>}
           <Input

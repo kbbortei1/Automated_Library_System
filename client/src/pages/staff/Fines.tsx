@@ -7,9 +7,9 @@ import { formatDate, money } from '../../lib/format';
 import type { Fine, FineStatus, Paginated } from '../../types';
 
 const STATUS_STYLES: Record<FineStatus, string> = {
-  UNPAID: 'bg-red-100 text-red-700',
-  PAID: 'bg-green-100 text-green-700',
-  WAIVED: 'bg-slate-200 text-slate-600',
+  UNPAID: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
+  PAID: 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+  WAIVED: 'bg-surface-3 text-fg-muted',
 };
 
 export default function Fines() {
@@ -55,12 +55,12 @@ export default function Fines() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.items.length ? (
-          <p className="p-6 text-slate-500">No fines found.</p>
+          <p className="p-6 text-fg-muted">No fines found.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Member</th>
                 <th className="px-4 py-3 font-medium">Book</th>
@@ -73,12 +73,12 @@ export default function Fines() {
             </thead>
             <tbody>
               {data.items.map((f) => (
-                <tr key={f.id} className="border-b border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{f.user.fullName}</td>
-                  <td className="px-4 py-3 text-slate-600">{f.loan.copy.book.title}</td>
-                  <td className="px-4 py-3 text-slate-500">{f.reason}</td>
-                  <td className="px-4 py-3 font-medium text-slate-700">{money(f.amount)}</td>
-                  <td className="px-4 py-3 text-slate-600">{formatDate(f.createdAt)}</td>
+                <tr key={f.id} className="border-b border-border-subtle">
+                  <td className="px-4 py-3 font-medium text-fg">{f.user.fullName}</td>
+                  <td className="px-4 py-3 text-fg-muted">{f.loan.copy.book.title}</td>
+                  <td className="px-4 py-3 text-fg-muted">{f.reason}</td>
+                  <td className="px-4 py-3 font-medium text-fg">{money(f.amount)}</td>
+                  <td className="px-4 py-3 text-fg-muted">{formatDate(f.createdAt)}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[f.status]}`}

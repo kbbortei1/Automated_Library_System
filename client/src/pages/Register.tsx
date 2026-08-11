@@ -72,7 +72,7 @@ export default function Register() {
         {/* Membership type as a segmented control, three fixed options read
             better than a dropdown and surface the ID field's meaning. */}
         <fieldset>
-          <legend className="mb-1.5 text-sm font-medium text-slate-700">Membership type</legend>
+          <legend className="mb-1.5 text-sm font-medium text-fg">Membership type</legend>
           <div className="grid grid-cols-3 gap-2">
             {MEMBERSHIPS.map((m) => {
               const active = form.membershipType === m.value;
@@ -84,8 +84,8 @@ export default function Register() {
                   onClick={() => setForm((f) => ({ ...f, membershipType: m.value }))}
                   className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                     active
-                      ? 'border-knust-500 bg-knust-50 text-knust-700 shadow-sm'
-                      : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                      ? 'border-accent bg-accent-soft text-accent shadow-sm'
+                      : 'border-border bg-surface text-fg-muted hover:bg-surface-2'
                   }`}
                 >
                   {m.label}
@@ -136,9 +136,9 @@ export default function Register() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-fg-muted">
         Already have an account?{' '}
-        <Link to="/login" className="font-semibold text-knust-700 hover:underline">
+        <Link to="/login" className="font-semibold text-accent hover:underline">
           Sign in
         </Link>
       </p>

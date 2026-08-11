@@ -5,9 +5,9 @@ import { formatDate, money } from '../lib/format';
 import type { Fine, FineStatus } from '../types';
 
 const STATUS_STYLES: Record<FineStatus, string> = {
-  UNPAID: 'bg-red-100 text-red-700',
-  PAID: 'bg-knust-100 text-knust-700',
-  WAIVED: 'bg-slate-200 text-slate-600',
+  UNPAID: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
+  PAID: 'bg-accent-soft text-accent',
+  WAIVED: 'bg-surface-3 text-fg-muted',
 };
 
 function StatusPill({ status }: { status: FineStatus }) {
@@ -28,14 +28,14 @@ export default function MyFines() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-2xl font-bold text-knust-900">My fines</h1>
+      <h1 className="font-display text-2xl font-bold text-fg">My fines</h1>
 
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <span className="text-sm text-slate-500">Outstanding balance</span>
+            <span className="text-sm text-fg-muted">Outstanding balance</span>
             {!isLoading && (
-              <p className="mt-0.5 text-xs text-slate-400">
+              <p className="mt-0.5 text-xs text-fg-subtle">
                 {outstanding > 0 ? 'Settled at the library desk' : 'Nothing owed'}
               </p>
             )}
@@ -45,7 +45,7 @@ export default function MyFines() {
           ) : (
             <span
               className={`font-display text-3xl font-bold ${
-                outstanding > 0 ? 'text-red-600' : 'text-knust-600'
+                outstanding > 0 ? 'text-red-600 dark:text-red-400' : 'text-accent'
               }`}
             >
               {money(outstanding)}
@@ -77,16 +77,16 @@ export default function MyFines() {
               <li key={f.id}>
                 <Card className="flex flex-col gap-3 p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <span className="font-medium text-slate-800">{f.loan.copy.book.title}</span>
+                    <span className="font-medium text-fg">{f.loan.copy.book.title}</span>
                     <StatusPill status={f.status} />
                   </div>
                   <dl className="grid grid-cols-2 gap-y-1 text-xs">
-                    <dt className="text-slate-400">Amount</dt>
-                    <dd className="text-right font-semibold text-slate-700">{money(f.amount)}</dd>
-                    <dt className="text-slate-400">Reason</dt>
-                    <dd className="text-right text-slate-600">{f.reason}</dd>
-                    <dt className="text-slate-400">Issued</dt>
-                    <dd className="text-right text-slate-600">{formatDate(f.createdAt)}</dd>
+                    <dt className="text-fg-subtle">Amount</dt>
+                    <dd className="text-right font-semibold text-fg">{money(f.amount)}</dd>
+                    <dt className="text-fg-subtle">Reason</dt>
+                    <dd className="text-right text-fg-muted">{f.reason}</dd>
+                    <dt className="text-fg-subtle">Issued</dt>
+                    <dd className="text-right text-fg-muted">{formatDate(f.createdAt)}</dd>
                   </dl>
                 </Card>
               </li>
@@ -95,7 +95,7 @@ export default function MyFines() {
 
           <Card className="hidden overflow-x-auto p-0 md:block">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="border-b border-border bg-surface-2 text-fg-muted">
                 <tr>
                   <th className="px-4 py-3 font-medium">Book</th>
                   <th className="px-4 py-3 font-medium">Reason</th>
@@ -106,13 +106,13 @@ export default function MyFines() {
               </thead>
               <tbody>
                 {data.fines.map((f) => (
-                  <tr key={f.id} className="border-b border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-800">
+                  <tr key={f.id} className="border-b border-border-subtle">
+                    <td className="px-4 py-3 font-medium text-fg">
                       {f.loan.copy.book.title}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{f.reason}</td>
-                    <td className="px-4 py-3 font-medium text-slate-700">{money(f.amount)}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatDate(f.createdAt)}</td>
+                    <td className="px-4 py-3 text-fg-muted">{f.reason}</td>
+                    <td className="px-4 py-3 font-medium text-fg">{money(f.amount)}</td>
+                    <td className="px-4 py-3 text-fg-muted">{formatDate(f.createdAt)}</td>
                     <td className="px-4 py-3">
                       <StatusPill status={f.status} />
                     </td>

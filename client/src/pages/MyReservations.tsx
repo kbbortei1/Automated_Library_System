@@ -7,11 +7,11 @@ import { formatDate } from '../lib/format';
 import type { Reservation, ReservationStatus } from '../types';
 
 const STATUS_STYLES: Record<ReservationStatus, string> = {
-  PENDING: 'bg-amber-100 text-amber-700',
-  READY: 'bg-knust-100 text-knust-700',
-  FULFILLED: 'bg-slate-200 text-slate-700',
-  CANCELLED: 'bg-slate-200 text-slate-500',
-  EXPIRED: 'bg-red-100 text-red-700',
+  PENDING: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+  READY: 'bg-accent-soft text-accent',
+  FULFILLED: 'bg-surface-3 text-fg',
+  CANCELLED: 'bg-surface-3 text-fg-muted',
+  EXPIRED: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
 };
 
 const isActive = (s: ReservationStatus) => s === 'PENDING' || s === 'READY';
@@ -63,7 +63,7 @@ export default function MyReservations() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-2xl font-bold text-knust-900">My reservations</h1>
+      <h1 className="font-display text-2xl font-bold text-fg">My reservations</h1>
 
       {error && <Alert>{error}</Alert>}
       {notice && <Alert kind="success">{notice}</Alert>}
@@ -93,7 +93,7 @@ export default function MyReservations() {
             action={
               <Link
                 to="/catalogue"
-                className="rounded-lg bg-knust-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-knust-700"
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition hover:bg-accent-hover"
               >
                 Browse the catalogue
               </Link>
@@ -109,22 +109,22 @@ export default function MyReservations() {
               <li key={r.id}>
                 <Card className="flex flex-col gap-3 p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <span className="font-medium text-slate-800">{r.book.title}</span>
+                    <span className="font-medium text-fg">{r.book.title}</span>
                     <StatusPill status={r.status} />
                   </div>
                   <dl className="grid grid-cols-2 gap-y-1 text-xs">
-                    <dt className="text-slate-400">Reserved</dt>
-                    <dd className="text-right text-slate-600">{formatDate(r.reservationDate)}</dd>
+                    <dt className="text-fg-subtle">Reserved</dt>
+                    <dd className="text-right text-fg-muted">{formatDate(r.reservationDate)}</dd>
                     {r.status === 'PENDING' && (
                       <>
-                        <dt className="text-slate-400">Queue</dt>
-                        <dd className="text-right text-slate-600">#{r.queuePosition}</dd>
+                        <dt className="text-fg-subtle">Queue</dt>
+                        <dd className="text-right text-fg-muted">#{r.queuePosition}</dd>
                       </>
                     )}
                     {r.status === 'READY' && (
                       <>
-                        <dt className="text-slate-400">Collect by</dt>
-                        <dd className="text-right font-semibold text-knust-700">
+                        <dt className="text-fg-subtle">Collect by</dt>
+                        <dd className="text-right font-semibold text-accent">
                           {formatDate(r.expiresAt)}
                         </dd>
                       </>
@@ -138,7 +138,7 @@ export default function MyReservations() {
 
           <Card className="hidden overflow-x-auto p-0 md:block">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+              <thead className="border-b border-border bg-surface-2 text-fg-muted">
                 <tr>
                   <th className="px-4 py-3 font-medium">Title</th>
                   <th className="px-4 py-3 font-medium">Reserved</th>
@@ -150,16 +150,16 @@ export default function MyReservations() {
               </thead>
               <tbody>
                 {data.map((r) => (
-                  <tr key={r.id} className="border-b border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-800">{r.book.title}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatDate(r.reservationDate)}</td>
-                    <td className="px-4 py-3 text-slate-600">
+                  <tr key={r.id} className="border-b border-border-subtle">
+                    <td className="px-4 py-3 font-medium text-fg">{r.book.title}</td>
+                    <td className="px-4 py-3 text-fg-muted">{formatDate(r.reservationDate)}</td>
+                    <td className="px-4 py-3 text-fg-muted">
                       {r.status === 'PENDING' ? `#${r.queuePosition}` : '-'}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill status={r.status} />
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
+                    <td className="px-4 py-3 text-fg-muted">
                       {r.status === 'READY' ? formatDate(r.expiresAt) : '-'}
                     </td>
                     <td className="px-4 py-3">{cancelButton(r)}</td>

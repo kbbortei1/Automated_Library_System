@@ -33,14 +33,14 @@ function Tile({
   hint?: string;
   tone?: 'default' | 'warn' | 'danger';
 }) {
-  const valueTone = { default: 'text-knust-800', warn: 'text-amber-600', danger: 'text-red-600' }[
+  const valueTone = { default: 'text-fg', warn: 'text-amber-600 dark:text-amber-400', danger: 'text-red-600 dark:text-red-400' }[
     tone
   ];
   return (
     <Card className="p-5">
-      <p className="text-sm font-medium text-slate-500">{label}</p>
+      <p className="text-sm font-medium text-fg-muted">{label}</p>
       <p className={`mt-1 font-display text-3xl font-bold ${valueTone}`}>{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-fg-subtle">{hint}</p>}
     </Card>
   );
 }
@@ -58,9 +58,9 @@ function ActionRow({
   cta: string;
 }) {
   const styles = {
-    danger: 'border-red-200 bg-red-50 text-red-800',
-    warn: 'border-amber-200 bg-amber-50 text-amber-800',
-    good: 'border-knust-200 bg-knust-50 text-knust-800',
+    danger: 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300',
+    warn: 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-300',
+    good: 'border-accent/40 bg-accent-soft text-accent-softfg',
   }[tone];
   return (
     <div
@@ -89,9 +89,9 @@ function SectionCard({
 }) {
   return (
     <Card className="p-0">
-      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-        <h2 className="font-semibold text-knust-900">{title}</h2>
-        <Link to={linkTo} className="text-sm font-medium text-knust-700 hover:underline">
+      <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
+        <h2 className="font-semibold text-fg">{title}</h2>
+        <Link to={linkTo} className="text-sm font-medium text-accent hover:underline">
           {linkLabel}
         </Link>
       </div>
@@ -111,10 +111,10 @@ function SectionCard({
 function MiniEmpty({ text, to, cta }: { text: string; to: string; cta: string }) {
   return (
     <div className="px-5 py-10 text-center">
-      <p className="text-sm text-slate-500">{text}</p>
+      <p className="text-sm text-fg-muted">{text}</p>
       <Link
         to={to}
-        className="mt-3 inline-block text-sm font-semibold text-knust-700 hover:underline"
+        className="mt-3 inline-block text-sm font-semibold text-accent hover:underline"
       >
         {cta}
       </Link>
@@ -164,10 +164,10 @@ function MemberDashboard() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-knust-900">
+          <h1 className="font-display text-2xl font-bold text-fg">
             Welcome, {user?.fullName.split(' ')[0]}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-fg-muted">
             Your loans, reservations and fines at the Prempeh II Library.
           </p>
         </div>
@@ -258,18 +258,18 @@ function MemberDashboard() {
               cta="Browse the catalogue"
             />
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-border-subtle">
               {upcoming.slice(0, 5).map((l) => {
                 const late = isOverdue(l.dueDate, l.status);
                 const soon = daysUntil(l.dueDate) <= DUE_SOON_DAYS;
                 return (
                   <li key={l.id} className="flex items-center justify-between gap-4 px-5 py-3">
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg">
                       {l.copy.book.title}
                     </span>
                     <span
                       className={`shrink-0 text-xs font-medium ${
-                        late ? 'text-red-600' : soon ? 'text-amber-600' : 'text-slate-500'
+                        late ? 'text-red-600 dark:text-red-400' : soon ? 'text-amber-600 dark:text-amber-400' : 'text-fg-muted'
                       }`}
                     >
                       {dueLabel(l.dueDate)}
@@ -290,16 +290,16 @@ function MemberDashboard() {
           {!ready.length && !pending.length ? (
             <MiniEmpty text="No active reservations." to="/catalogue" cta="Reserve a title" />
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-border-subtle">
               {[...ready, ...pending].slice(0, 5).map((r) => (
                 <li key={r.id} className="flex items-center justify-between gap-4 px-5 py-3">
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg">
                     {r.book.title}
                   </span>
                   {r.status === 'READY' ? (
                     <Badge tone="green">Ready</Badge>
                   ) : (
-                    <span className="shrink-0 text-xs text-slate-500">
+                    <span className="shrink-0 text-xs text-fg-muted">
                       #{r.queuePosition} in queue
                     </span>
                   )}

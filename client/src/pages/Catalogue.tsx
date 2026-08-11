@@ -9,9 +9,9 @@ import type { Book, Category, Paginated } from '../types';
 function BookCard({ book }: { book: Book }) {
   const available = book.availableCopies > 0;
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-card transition hover:shadow-cardhover">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-card transition hover:shadow-cardhover">
       <Link to={`/catalogue/${book.id}`} className="block">
-        <div className="aspect-[2/3] w-full overflow-hidden bg-slate-100">
+        <div className="aspect-[2/3] w-full overflow-hidden bg-surface-3">
           <BookCover isbn={book.isbn} coverImageUrl={book.coverImageUrl} title={book.title} size="M" />
         </div>
       </Link>
@@ -20,12 +20,12 @@ function BookCard({ book }: { book: Book }) {
           {book.category.name}
         </Badge>
         <Link to={`/catalogue/${book.id}`}>
-          <h3 className="mt-2 line-clamp-2 font-display font-bold leading-snug text-knust-900 hover:text-knust-700">
+          <h3 className="mt-2 line-clamp-2 font-display font-bold leading-snug text-fg hover:text-accent">
             {book.title}
           </h3>
         </Link>
-        <p className="mt-1 text-sm text-slate-500">by {book.authors.map((a) => a.name).join(', ')}</p>
-        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+        <p className="mt-1 text-sm text-fg-muted">by {book.authors.map((a) => a.name).join(', ')}</p>
+        <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-3">
           {available ? (
             <StatusDot tone="green">{book.availableCopies} available</StatusDot>
           ) : (
@@ -35,8 +35,8 @@ function BookCard({ book }: { book: Book }) {
             to={`/catalogue/${book.id}`}
             className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
               available
-                ? 'bg-knust-600 text-white hover:bg-knust-700'
-                : 'border border-knust-200 bg-knust-50 text-knust-700 hover:bg-knust-100'
+                ? 'bg-accent text-white hover:bg-accent-hover'
+                : 'border border-accent/40 bg-accent-soft text-accent hover:bg-accent-soft'
             }`}
           >
             {available ? 'Borrow' : 'Reserve'}
@@ -83,13 +83,13 @@ export default function Catalogue() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-display text-3xl font-bold text-knust-900">Discover your next great read</h1>
+      <h1 className="font-display text-3xl font-bold text-fg">Discover your next great read</h1>
 
       {/* Search bar */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <svg
-            className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-fg-subtle"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -104,7 +104,7 @@ export default function Catalogue() {
               first();
             }}
             placeholder="Search by title, author, or ISBN…"
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20"
+            className="w-full rounded-lg border border-border bg-surface py-3 pl-11 pr-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <Select
@@ -121,7 +121,7 @@ export default function Catalogue() {
         {/* Filters sidebar */}
         <aside className="flex flex-col gap-6">
           <div>
-            <h2 className="mb-3 text-lg font-bold text-knust-900">Categories</h2>
+            <h2 className="mb-3 text-lg font-bold text-fg">Categories</h2>
             <ul className="space-y-1 text-sm">
               <li>
                 <button
@@ -131,8 +131,8 @@ export default function Catalogue() {
                   }}
                   className={`flex w-full items-center justify-between rounded-lg px-3 py-2 ${
                     categoryId === ''
-                      ? 'bg-knust-700 font-semibold text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                      ? 'bg-accent-hover font-semibold text-white'
+                      : 'text-fg-muted hover:bg-surface-3'
                   }`}
                 >
                   All Categories
@@ -147,8 +147,8 @@ export default function Catalogue() {
                     }}
                     className={`flex w-full items-center justify-between rounded-lg px-3 py-2 ${
                       categoryId === c.id
-                        ? 'bg-knust-700 font-semibold text-white'
-                        : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-accent-hover font-semibold text-white'
+                        : 'text-fg-muted hover:bg-surface-3'
                     }`}
                   >
                     {c.name}
@@ -159,7 +159,7 @@ export default function Catalogue() {
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="font-bold text-knust-900">Available only</span>
+            <span className="font-bold text-fg">Available only</span>
             <Toggle
               checked={availableOnly}
               onChange={(v) => {
@@ -173,10 +173,10 @@ export default function Catalogue() {
         {/* Results */}
         <div>
           {isLoading ? (
-            <p className="text-slate-500">Loading…</p>
+            <p className="text-fg-muted">Loading…</p>
           ) : !data?.items.length ? (
             <Card>
-              <p className="text-center text-slate-500">No books match your search.</p>
+              <p className="text-center text-fg-muted">No books match your search.</p>
             </Card>
           ) : (
             <>
@@ -189,25 +189,25 @@ export default function Catalogue() {
               </div>
 
               <div className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row">
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-fg-muted">
                   Showing {from} to {to} of {data.total} results
                 </p>
                 <div className="flex items-center gap-1">
                   <button
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
-                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm disabled:opacity-40"
+                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
                   >
                     ‹
                   </button>
-                  <span className="rounded-lg bg-knust-700 px-3.5 py-1.5 text-sm font-semibold text-white">
+                  <span className="rounded-lg bg-accent-hover px-3.5 py-1.5 text-sm font-semibold text-white">
                     {data.page}
                   </span>
-                  <span className="px-2 text-sm text-slate-400">of {data.totalPages || 1}</span>
+                  <span className="px-2 text-sm text-fg-subtle">of {data.totalPages || 1}</span>
                   <button
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm disabled:opacity-40"
+                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
                   >
                     ›
                   </button>

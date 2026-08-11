@@ -43,12 +43,12 @@ export default function Loans() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.items.length ? (
-          <p className="p-6 text-slate-500">No loans found.</p>
+          <p className="p-6 text-fg-muted">No loans found.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Book</th>
                 <th className="px-4 py-3 font-medium">Member</th>
@@ -62,14 +62,14 @@ export default function Loans() {
               {data.items.map((l) => {
                 const overdue = isOverdue(l.dueDate, l.status);
                 return (
-                  <tr key={l.id} className="border-b border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-800">{l.copy.book.title}</td>
-                    <td className="px-4 py-3 text-slate-600">{l.user.fullName}</td>
-                    <td className="px-4 py-3 text-slate-500">{l.copy.accessionNumber}</td>
-                    <td className={`px-4 py-3 ${overdue ? 'font-semibold text-red-600' : 'text-slate-600'}`}>
+                  <tr key={l.id} className="border-b border-border-subtle">
+                    <td className="px-4 py-3 font-medium text-fg">{l.copy.book.title}</td>
+                    <td className="px-4 py-3 text-fg-muted">{l.user.fullName}</td>
+                    <td className="px-4 py-3 text-fg-muted">{l.copy.accessionNumber}</td>
+                    <td className={`px-4 py-3 ${overdue ? 'font-semibold text-red-600 dark:text-red-400' : 'text-fg-muted'}`}>
                       {formatDate(l.dueDate)}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{formatDate(l.returnDate)}</td>
+                    <td className="px-4 py-3 text-fg-muted">{formatDate(l.returnDate)}</td>
                     <td className="px-4 py-3">
                       <Badge
                         tone={
@@ -96,17 +96,17 @@ export default function Loans() {
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm disabled:opacity-40"
+            className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-40"
           >
             Previous
           </button>
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-fg-muted">
             Page {data.page} of {data.totalPages}
           </span>
           <button
             disabled={page >= data.totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm disabled:opacity-40"
+            className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-40"
           >
             Next
           </button>

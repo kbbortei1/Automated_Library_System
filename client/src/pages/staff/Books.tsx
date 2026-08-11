@@ -48,7 +48,7 @@ export default function Books() {
   if (creating || editing) {
     return (
       <div className="mx-auto max-w-3xl">
-        <h1 className="mb-6 text-2xl font-bold text-navy-800">
+        <h1 className="mb-6 text-2xl font-bold text-fg">
           {editing ? `Edit: ${editing.title}` : 'Add a new book'}
         </h1>
         <Card>
@@ -80,12 +80,12 @@ export default function Books() {
 
       <Card className="overflow-x-auto p-0">
         {isLoading ? (
-          <p className="p-6 text-slate-500">Loading…</p>
+          <p className="p-6 text-fg-muted">Loading…</p>
         ) : !data?.items.length ? (
-          <p className="p-6 text-slate-500">No books found.</p>
+          <p className="p-6 text-fg-muted">No books found.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
                 <th className="px-4 py-3 font-medium">Authors</th>
@@ -96,14 +96,14 @@ export default function Books() {
             </thead>
             <tbody>
               {data.items.map((b) => (
-                <tr key={b.id} className="border-b border-slate-100">
-                  <td className="px-4 py-3 font-medium text-slate-800">{b.title}</td>
-                  <td className="px-4 py-3 text-slate-600">
+                <tr key={b.id} className="border-b border-border-subtle">
+                  <td className="px-4 py-3 font-medium text-fg">{b.title}</td>
+                  <td className="px-4 py-3 text-fg-muted">
                     {b.authors.map((a) => a.name).join(', ')}
                   </td>
-                  <td className="px-4 py-3 text-slate-500">{b.isbn}</td>
+                  <td className="px-4 py-3 text-fg-muted">{b.isbn}</td>
                   <td className="px-4 py-3">
-                    <span className="font-medium text-slate-700">
+                    <span className="font-medium text-fg">
                       {b.availableCopies}/{b.totalCopies}
                     </span>
                   </td>
@@ -111,13 +111,13 @@ export default function Books() {
                     <div className="flex gap-2">
                       <Link
                         to={`/staff/books/${b.id}/copies`}
-                        className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                        className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-2"
                       >
                         Copies
                       </Link>
                       <button
                         onClick={() => setEditing(b)}
-                        className="rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                        className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-2"
                       >
                         Edit
                       </button>
@@ -125,7 +125,7 @@ export default function Books() {
                         onClick={() => {
                           if (confirm(`Delete "${b.title}"?`)) remove.mutate(b.id);
                         }}
-                        className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                        className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50"
                       >
                         Delete
                       </button>

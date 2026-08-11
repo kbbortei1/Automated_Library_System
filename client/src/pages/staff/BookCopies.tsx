@@ -6,11 +6,11 @@ import { Alert, Button, Card, Input, Select } from '../../components/ui';
 import type { Book, BookCopy, CopyStatus } from '../../types';
 
 const STATUS_STYLES: Record<CopyStatus, string> = {
-  AVAILABLE: 'bg-green-100 text-green-700',
-  CHECKED_OUT: 'bg-amber-100 text-amber-700',
+  AVAILABLE: 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+  CHECKED_OUT: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
   RESERVED: 'bg-blue-100 text-blue-700',
-  LOST: 'bg-red-100 text-red-700',
-  DAMAGED: 'bg-slate-200 text-slate-700',
+  LOST: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
+  DAMAGED: 'bg-surface-3 text-fg',
 };
 
 export default function BookCopies() {
@@ -58,7 +58,7 @@ export default function BookCopies() {
     addCopy.mutate();
   }
 
-  if (isLoading) return <p className="text-slate-500">Loading…</p>;
+  if (isLoading) return <p className="text-fg-muted">Loading…</p>;
   if (!book) return <Alert>Book not found.</Alert>;
 
   const copies = book.copies ?? [];
@@ -66,11 +66,11 @@ export default function BookCopies() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link to="/staff/books" className="text-sm text-brand-600 hover:underline">
+        <Link to="/staff/books" className="text-sm text-accent hover:underline">
           ← Back to books
         </Link>
-        <h1 className="mt-2 text-2xl font-bold text-navy-800">{book.title}</h1>
-        <p className="text-slate-500">
+        <h1 className="mt-2 text-2xl font-bold text-fg">{book.title}</h1>
+        <p className="text-fg-muted">
           {book.isbn} · {book.availableCopies}/{book.totalCopies} available
         </p>
       </div>
@@ -78,7 +78,7 @@ export default function BookCopies() {
       {error && <Alert>{error}</Alert>}
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold text-slate-700">Add copy</h2>
+        <h2 className="mb-4 text-lg font-semibold text-fg">Add copy</h2>
         <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-3">
           <Input
             label="Accession number"
@@ -100,10 +100,10 @@ export default function BookCopies() {
 
       <Card className="overflow-x-auto p-0">
         {!copies.length ? (
-          <p className="p-6 text-slate-500">No copies yet.</p>
+          <p className="p-6 text-fg-muted">No copies yet.</p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <thead className="border-b border-border bg-surface-2 text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Accession #</th>
                 <th className="px-4 py-3 font-medium">Shelf</th>
@@ -115,9 +115,9 @@ export default function BookCopies() {
               {copies.map((c: BookCopy) => {
                 const locked = c.status === 'CHECKED_OUT' || c.status === 'RESERVED';
                 return (
-                  <tr key={c.id} className="border-b border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-800">{c.accessionNumber}</td>
-                    <td className="px-4 py-3 text-slate-600">{c.shelfLocation}</td>
+                  <tr key={c.id} className="border-b border-border-subtle">
+                    <td className="px-4 py-3 font-medium text-fg">{c.accessionNumber}</td>
+                    <td className="px-4 py-3 text-fg-muted">{c.shelfLocation}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[c.status]}`}
@@ -144,7 +144,7 @@ export default function BookCopies() {
                           onClick={() => {
                             if (confirm('Remove this copy?')) removeCopy.mutate(c.id);
                           }}
-                          className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-40"
+                          className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 disabled:opacity-40"
                         >
                           Remove
                         </button>
