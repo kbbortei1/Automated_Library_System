@@ -2,10 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Semantic colour tokens.
+
+  Components reference roles (surface, fg, accent) rather than literal shades,
+  so the same markup serves both themes. Values are space-separated RGB
+  channels so Tailwind's <alpha-value> syntax still works: bg-surface/60.
+
+  Light surfaces are tinted towards the KNUST hue at very low chroma rather
+  than being pure white, which reads softer than #ffffff without looking grey.
+*/
 :root {
   color-scheme: light;
+
+  --bg: 234 239 233; /* #eaefe9  page */
+  --surface: 251 252 250; /* #fbfcfa  cards */
+  --surface-2: 240 244 239; /* #f0f4ef  table headers, hovers */
+  --surface-3: 226 233 224; /* #e2e9e0  pressed, wells */
+
+  --border: 214 224 211; /* #d6e0d3 */
+  --border-subtle: 228 235 226; /* #e4ebe2 */
+
+  --fg: 18 34 24; /* #122218  primary text */
+  --fg-muted: 82 100 87; /* #526457  secondary */
+  --fg-subtle: 126 143 130; /* #7e8f82  tertiary */
+
+  /* Institutional green: deeper and less vivid than the official forest
+     green, which stays reserved for the crest and brand lockups. */
+  --accent: 29 107 63; /* #1d6b3f */
+  --accent-hover: 23 87 52; /* #175734 */
+  --accent-fg: 255 255 255;
+  --accent-soft: 226 240 231; /* #e2f0e7  chips, soft fills */
+  --accent-soft-fg: 21 79 47; /* #154f2f */
+
+  /* Dark chrome used by the app header and the auth panel. */
+  --chrome: 13 42 28; /* #0d2a1c */
+  --chrome-fg: 233 240 234;
+  --chrome-muted: 160 183 167;
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --bg: 16 22 19; /* #101613 */
+  --surface: 24 32 27; /* #18201b */
+  --surface-2: 32 42 35; /* #202a23 */
+  --surface-3: 43 55 47; /* #2b372f */
+
+  --border: 48 62 52; /* #303e34 */
+  --border-subtle: 38 50 42; /* #26322a */
+
+  /* Off-white rather than #ffffff: full white on a dark surface is the
+     other half of the glare problem. */
+  --fg: 230 232 230; /* #e6e8e6 */
+  --fg-muted: 165 176 168; /* #a5b0a8 */
+  --fg-subtle: 124 138 128; /* #7c8a80 */
+
+  /* Saturated greens go muddy on dark surfaces, so the accent lifts in
+     lightness and drops a little in chroma. */
+  --accent: 74 163 108; /* #4aa36c */
+  --accent-hover: 104 186 134; /* #68ba86 */
+  --accent-fg: 8 20 13;
+  --accent-soft: 30 51 39; /* #1e3327 */
+  --accent-soft-fg: 138 201 162; /* #8ac9a2 */
+
+  --chrome: 11 18 14; /* #0b120e */
+  --chrome-fg: 233 240 234;
+  --chrome-muted: 150 170 156;
 }
 
 body {
-  @apply bg-slate-50 font-sans text-slate-900 antialiased;
+  @apply bg-bg font-sans text-fg antialiased;
 }

@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+// Token-backed colour. Channels come from a CSS variable so the value flips
+// with the theme, while <alpha-value> keeps bg-surface/60 working.
+const token = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -9,6 +14,35 @@ export default {
         display: ['"Source Serif 4"', 'Georgia', 'serif'],
       },
       colors: {
+        // --- Semantic roles (theme-aware, see src/index.css) ---
+        bg: token('bg'),
+        surface: {
+          DEFAULT: token('surface'),
+          2: token('surface-2'),
+          3: token('surface-3'),
+        },
+        border: {
+          DEFAULT: token('border'),
+          subtle: token('border-subtle'),
+        },
+        fg: {
+          DEFAULT: token('fg'),
+          muted: token('fg-muted'),
+          subtle: token('fg-subtle'),
+        },
+        accent: {
+          DEFAULT: token('accent'),
+          hover: token('accent-hover'),
+          fg: token('accent-fg'),
+          soft: token('accent-soft'),
+          softfg: token('accent-soft-fg'),
+        },
+        chrome: {
+          DEFAULT: token('chrome'),
+          fg: token('chrome-fg'),
+          muted: token('chrome-muted'),
+        },
+
         // Material 3 navy ramp (primary = #032448, primary-container = #1f3a5f).
         navy: {
           50: '#eef2f8',
@@ -57,6 +91,14 @@ export default {
           700: '#a97300',
         },
         lust: '#e62020',
+        // Near-black desaturated green for surfaces that stay dark in both
+        // themes: the app header and the auth photo scrim. Deliberately low
+        // chroma so a large area of it does not read as "a green block".
+        ink: {
+          DEFAULT: '#0d2a1c',
+          900: '#081a12',
+          700: '#154f2f',
+        },
       },
       boxShadow: {
         card: '0 1px 2px 0 rgb(15 36 67 / 0.04), 0 1px 3px 0 rgb(15 36 67 / 0.06)',
