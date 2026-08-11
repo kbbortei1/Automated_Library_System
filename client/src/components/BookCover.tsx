@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BookIcon } from './icons';
 
 // Renders a book cover. Prefers an explicit coverImageUrl, otherwise falls back to the
 // Open Library cover for the ISBN; if neither resolves, shows a placeholder.
@@ -21,7 +22,9 @@ export function BookCover({
 
   if (!src || failed) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-surface-3 text-5xl">📘</div>
+      <div className="flex h-full w-full items-center justify-center bg-surface-3">
+        <BookIcon className="h-1/3 w-1/3 text-fg-subtle" />
+      </div>
     );
   }
 
