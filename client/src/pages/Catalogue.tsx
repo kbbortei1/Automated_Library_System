@@ -4,6 +4,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { Badge, Card, Select, StatusDot, Toggle } from '../components/ui';
 import { BookCover } from '../components/BookCover';
+import { ChevronLeftIcon, ChevronRightIcon, SearchIcon } from '../components/icons';
 import type { Book, Category, Paginated } from '../types';
 
 function BookCard({ book }: { book: Book }) {
@@ -88,15 +89,7 @@ export default function Catalogue() {
       {/* Search bar */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <svg
-            className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-fg-subtle"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607Z" />
-          </svg>
+          <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-fg-subtle" />
           <input
             value={q}
             onChange={(e) => {
@@ -196,9 +189,10 @@ export default function Catalogue() {
                   <button
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
+                    className="rounded-lg border border-border p-1.5 text-fg-muted transition hover:bg-surface-2 disabled:opacity-40"
+                    aria-label="Previous page"
                   >
-                    ‹
+                    <ChevronLeftIcon className="h-4 w-4" />
                   </button>
                   <span className="rounded-lg bg-accent-hover px-3.5 py-1.5 text-sm font-semibold text-white">
                     {data.page}
@@ -207,9 +201,10 @@ export default function Catalogue() {
                   <button
                     disabled={page >= data.totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
+                    className="rounded-lg border border-border p-1.5 text-fg-muted transition hover:bg-surface-2 disabled:opacity-40"
+                    aria-label="Next page"
                   >
-                    ›
+                    <ChevronRightIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
