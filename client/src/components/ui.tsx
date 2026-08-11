@@ -13,12 +13,12 @@ export function Button({
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
   const variants: Record<ButtonVariant, string> = {
-    primary: 'bg-navy-700 text-white hover:bg-navy-800 disabled:opacity-50 shadow-sm',
-    accent: 'bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm',
-    knust: 'bg-knust-600 text-white hover:bg-knust-700 disabled:opacity-50 shadow-sm',
-    secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50',
+    primary: 'bg-accent text-accent-fg hover:bg-accent-hover disabled:opacity-50 shadow-sm',
+    accent: 'bg-accent text-accent-fg hover:bg-accent-hover disabled:opacity-50 shadow-sm',
+    knust: 'bg-accent text-accent-fg hover:bg-accent-hover disabled:opacity-50 shadow-sm',
+    secondary: 'bg-surface text-fg border border-border hover:bg-surface-2',
     danger: 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 shadow-sm',
-    ghost: 'text-slate-600 hover:bg-slate-100',
+    ghost: 'text-fg-muted hover:bg-surface-3',
   };
   return (
     <button
@@ -36,12 +36,12 @@ export function Input({
 }: InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
   return (
     <label className="block">
-      {label && <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>}
+      {label && <span className="mb-1.5 block text-sm font-medium text-fg">{label}</span>}
       <input
-        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20 ${className}`}
+        className={`w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-fg-subtle focus:border-accent focus:ring-2 focus:ring-accent/20 ${className}`}
         {...props}
       />
-      {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
+      {error && <span className="mt-1 block text-xs text-red-600 dark:text-red-400">{error}</span>}
     </label>
   );
 }
@@ -54,9 +54,9 @@ export function Select({
 }: SelectHTMLAttributes<HTMLSelectElement> & { label?: string }) {
   return (
     <label className="block">
-      {label && <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>}
+      {label && <span className="mb-1.5 block text-sm font-medium text-fg">{label}</span>}
       <select
-        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20 ${className}`}
+        className={`w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-fg outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 ${className}`}
         {...props}
       >
         {children}
@@ -73,16 +73,16 @@ export function Alert({
   children: ReactNode;
 }) {
   const styles = {
-    error: 'bg-red-50 text-red-700 border-red-200',
-    success: 'bg-green-50 text-green-700 border-green-200',
-    info: 'bg-knust-50 text-knust-700 border-knust-200',
+    error: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/25',
+    success: 'bg-green-50 text-green-700 border-green-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/25',
+    info: 'bg-accent-soft text-accent border-accent/40',
   };
   return <div className={`rounded-lg border px-3.5 py-2.5 text-sm ${styles[kind]}`}>{children}</div>;
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-6 shadow-card ${className}`}>
+    <div className={`rounded-xl border border-border bg-surface p-6 shadow-card ${className}`}>
       {children}
     </div>
   );
@@ -91,7 +91,7 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 // Grey block standing in for content while a query is in flight. Sized by the
 // caller so the placeholder matches the shape of what is about to land.
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded bg-slate-200 ${className}`} />;
+  return <div className={`animate-pulse rounded bg-surface-3 ${className}`} />;
 }
 
 // Empty result placeholder. `action` should offer the way out of the empty
@@ -110,13 +110,13 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
       {icon && (
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-knust-50 text-2xl text-knust-600">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-2xl text-accent">
           {icon}
         </span>
       )}
       <div>
-        <p className="font-semibold text-slate-800">{title}</p>
-        {body && <p className="mt-1 text-sm text-slate-500">{body}</p>}
+        <p className="font-semibold text-fg">{title}</p>
+        {body && <p className="mt-1 text-sm text-fg-muted">{body}</p>}
       </div>
       {action}
     </div>
@@ -135,12 +135,12 @@ export function Badge({
   className?: string;
 }) {
   const tones: Record<BadgeTone, string> = {
-    gray: 'bg-slate-100 text-slate-600',
-    green: 'bg-green-100 text-green-700',
-    amber: 'bg-amber-100 text-amber-700',
-    red: 'bg-red-100 text-red-700',
-    blue: 'bg-brand-50 text-brand-700',
-    navy: 'bg-navy-700 text-white',
+    gray: 'bg-surface-3 text-fg-muted',
+    green: 'bg-green-100 text-green-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    red: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
+    blue: 'bg-accent-soft text-accent',
+    navy: 'bg-accent text-white',
   };
   return (
     <span
@@ -155,7 +155,7 @@ export function Badge({
 export function StatusDot({ tone, children }: { tone: 'green' | 'amber' | 'red'; children: ReactNode }) {
   const dot = { green: 'bg-green-500', amber: 'bg-amber-500', red: 'bg-red-500' }[tone];
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-fg-muted">
       <span className={`h-2 w-2 rounded-full ${dot}`} />
       {children}
     </span>
@@ -176,11 +176,11 @@ export function Toggle({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-        checked ? 'bg-knust-600' : 'bg-slate-300'
+        checked ? 'bg-accent' : 'bg-surface-3'
       }`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${
+        className={`inline-block h-4 w-4 transform rounded-full bg-surface shadow transition ${
           checked ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
@@ -194,7 +194,7 @@ export function StatCard({
   value,
   icon,
   hint,
-  accent = 'text-slate-900',
+  accent = 'text-fg',
 }: {
   label: string;
   value: ReactNode;
@@ -205,15 +205,15 @@ export function StatCard({
   return (
     <Card className="flex flex-col gap-3 p-5">
       <div className="flex items-start justify-between">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
+        <span className="text-sm font-medium text-fg-muted">{label}</span>
         {icon && (
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy-50 text-navy-700">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-soft text-accent">
             {icon}
           </span>
         )}
       </div>
       <div className={`font-display text-3xl font-bold ${accent}`}>{value}</div>
-      {hint && <div className="text-xs text-slate-400">{hint}</div>}
+      {hint && <div className="text-xs text-fg-subtle">{hint}</div>}
     </Card>
   );
 }
@@ -226,7 +226,7 @@ export function Avatar({ name, className = '' }: { name: string; className?: str
     .slice(0, 2)
     .join('')
     .toUpperCase();
-  const tones = ['bg-knust-700', 'bg-knust-500', 'bg-amber-600', 'bg-emerald-600', 'bg-rose-500'];
+  const tones = ['bg-accent-hover', 'bg-accent', 'bg-amber-600', 'bg-emerald-600', 'bg-rose-500'];
   const tone = tones[name.charCodeAt(0) % tones.length];
   return (
     <span
@@ -241,8 +241,8 @@ export function PageHeading({ title, subtitle, action }: { title: string; subtit
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold text-navy-800">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-fg">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-fg-muted">{subtitle}</p>}
       </div>
       {action}
     </div>
