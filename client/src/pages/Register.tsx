@@ -2,7 +2,21 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { apiErrorMessage } from '../lib/api';
-import { Alert, Button, Card, Input, Select } from '../components/ui';
+import { AuthLayout } from '../components/AuthLayout';
+import { Alert, Button, Input } from '../components/ui';
+
+const MEMBERSHIPS = [
+  { value: 'STUDENT', label: 'Student' },
+  { value: 'FACULTY', label: 'Faculty' },
+  { value: 'PUBLIC', label: 'Public' },
+] as const;
+
+// The ID a member signs in with is named differently per population.
+const ID_LABEL: Record<string, string> = {
+  STUDENT: 'Student no. / index (optional)',
+  FACULTY: 'Staff ID (optional)',
+  PUBLIC: 'Member ID (optional)',
+};
 
 export default function Register() {
   const { register } = useAuth();
@@ -14,7 +28,7 @@ export default function Register() {
     identifier: '',
     password: '',
     phone: '',
-    membershipType: 'PUBLIC',
+    membershipType: 'STUDENT',
   });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -48,52 +62,86 @@ export default function Register() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-brand-700">Create your account</h1>
-      </div>
-      <Card>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {error && <Alert>{error}</Alert>}
-          <Input label="Full name" required value={form.fullName} onChange={update('fullName')} />
-          <Input label="Email" type="email" required value={form.email} onChange={update('email')} />
-          <Input
-            label={
-              form.membershipType === 'FACULTY'
-                ? 'Staff ID (optional)'
-                : form.membershipType === 'STUDENT'
-                  ? 'Student no. / index (optional)'
-                  : 'Member ID (optional)'
-            }
-            value={form.identifier}
-            onChange={update('identifier')}
-            placeholder="used to sign in alongside your email"
-          />
+    <AuthLayout
+      title="Create your account"
+      subtitle="Register once to borrow, reserve and renew across the KNUST Library System."
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {error && <Alert>{error}</Alert>}
+
+        {/* Membership type as a segmented control — three fixed options read
+            better than a dropdown and surface the ID field's meaning. */}
+        <fieldset>
+          <legend className="mb-1.5 text-sm font-medium text-slate-700">Membership type</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {MEMBERSHIPS.map((m) => {
+              const active = form.membershipType === m.value;
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setForm((f) => ({ ...f, membershipType: m.value }))}
+                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                    active
+                      ? 'border-knust-500 bg-knust-50 text-knust-700 shadow-sm'
+                      : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <Input label="Full name" required value={form.fullName} onChange={update('fullName')} />
+
+        <Input
+          label="Email"
+          type="email"
+          required
+          placeholder="you@st.knust.edu.gh"
+          value={form.email}
+          onChange={update('email')}
+        />
+
+        <Input
+          label={ID_LABEL[form.membershipType]}
+          value={form.identifier}
+          onChange={update('identifier')}
+          placeholder="used to sign in alongside your email"
+        />
+
+        <div className="grid gap-5 sm:grid-cols-2">
           <Input
             label="Password"
             type="password"
             required
             minLength={8}
+            placeholder="min. 8 characters"
             value={form.password}
             onChange={update('password')}
           />
-          <Input label="Phone (optional)" value={form.phone} onChange={update('phone')} />
-          <Select label="Membership type" value={form.membershipType} onChange={update('membershipType')}>
-            <option value="PUBLIC">Public</option>
-            <option value="STUDENT">Student</option>
-            <option value="FACULTY">Faculty</option>
-          </Select>
-          <Button type="submit" disabled={submitting}>
-            {submitting ? 'Creating…' : 'Create account'}
-          </Button>
-        </form>
-        <p className="mt-4 text-center text-sm text-slate-500">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-brand-600 hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </Card>
-    </div>
+          <Input
+            label="Phone (optional)"
+            value={form.phone}
+            onChange={update('phone')}
+            placeholder="0XX XXX XXXX"
+          />
+        </div>
+
+        <Button type="submit" variant="knust" disabled={submitting} className="w-full py-2.5">
+          {submitting ? 'Creating…' : 'Create account'}
+        </Button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-slate-500">
+        Already have an account?{' '}
+        <Link to="/login" className="font-semibold text-knust-700 hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }
