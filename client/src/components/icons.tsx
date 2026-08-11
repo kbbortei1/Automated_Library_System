@@ -95,6 +95,37 @@ export const CheckCircleIcon = (p: IconProps) => (
   </Svg>
 );
 
+/** Open book, used for the "on loan" tile. */
+export const BookOpenIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 6.5C10.5 5 8.5 4.5 4 4.5v13c4.5 0 6.5.5 8 2 1.5-1.5 3.5-2 8-2v-13c-4.5 0-6.5.5-8 2z" />
+    <path d="M12 6.5v13" />
+  </Svg>
+);
+
+export const ClockIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3.5 2" />
+  </Svg>
+);
+
+/** Stacked coins, used for the outstanding-balance tile. */
+export const CoinsIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <ellipse cx="12" cy="6.5" rx="7" ry="3" />
+    <path d="M5 6.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5" />
+    <path d="M5 11.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5" />
+  </Svg>
+);
+
+export const AlertTriangleIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M10.3 3.9L2.4 17.2A2 2 0 004.1 20h15.8a2 2 0 001.7-2.8L13.7 3.9a2 2 0 00-3.4 0z" />
+    <path d="M12 9v4M12 16.5h.01" />
+  </Svg>
+);
+
 export const BellIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M18 8.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z" />
