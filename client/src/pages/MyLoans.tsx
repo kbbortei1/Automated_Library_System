@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../lib/api';
 import { Alert, Button, Card, EmptyState, Skeleton } from '../components/ui';
+import { BooksIcon } from '../components/icons';
 import { formatDate, isOverdue } from '../lib/format';
 import type { Loan } from '../types';
 
@@ -92,7 +93,7 @@ export default function MyLoans() {
       ) : !data?.length ? (
         <Card className="p-0">
           <EmptyState
-            icon="📚"
+            icon={<BooksIcon />}
             title={activeOnly ? 'No books on loan' : 'No loans yet'}
             body={
               activeOnly
