@@ -88,6 +88,41 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
   );
 }
 
+// Grey block standing in for content while a query is in flight. Sized by the
+// caller so the placeholder matches the shape of what is about to land.
+export function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse rounded bg-slate-200 ${className}`} />;
+}
+
+// Empty result placeholder. `action` should offer the way out of the empty
+// state (usually a route back to the catalogue) rather than leaving a dead end.
+export function EmptyState({
+  icon,
+  title,
+  body,
+  action,
+}: {
+  icon?: ReactNode;
+  title: string;
+  body?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
+      {icon && (
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-knust-50 text-2xl text-knust-600">
+          {icon}
+        </span>
+      )}
+      <div>
+        <p className="font-semibold text-slate-800">{title}</p>
+        {body && <p className="mt-1 text-sm text-slate-500">{body}</p>}
+      </div>
+      {action}
+    </div>
+  );
+}
+
 type BadgeTone = 'gray' | 'green' | 'amber' | 'red' | 'blue' | 'navy';
 
 export function Badge({
