@@ -40,9 +40,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setPref = useCallback(
     (p: ThemePref) => {
+      // Suppress colour transitions for the swap itself, otherwise every
+      // element animates at once and the toggle feels sluggish.
+      const root = document.documentElement;
+      root.classList.add('theme-switching');
       localStorage.setItem(STORAGE_KEY, p);
       setPrefState(p);
       sync(p);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => root.classList.remove('theme-switching'));
+      });
     },
     [sync],
   );
