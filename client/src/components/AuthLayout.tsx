@@ -56,7 +56,7 @@ export function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[1.05fr_1fr]">
+    <div className="flex min-h-screen flex-col bg-white lg:grid lg:grid-cols-[1.05fr_1fr]">
       {/* ---- Brand panel (desktop only) ---- */}
       <aside className="relative hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
         <LibraryBackdrop />
@@ -95,7 +95,7 @@ export function AuthLayout({
       </aside>
 
       {/* ---- Form panel ---- */}
-      <main className="flex flex-col bg-white">
+      <main className="flex flex-1 flex-col bg-white">
         {/* Compact brand band standing in for the photo panel on small screens. */}
         <div className="relative flex items-center gap-3 bg-knust-900 px-5 py-4 lg:hidden">
           <KnustCrest className="h-10 w-10" />
