@@ -10,6 +10,19 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Resolve the theme before first paint so a dark-mode user never sees a
+      // white flash. Mirrors the logic in src/lib/theme.tsx.
+      (function () {
+        try {
+          var p = localStorage.getItem('knust.theme') || 'system';
+          var dark =
+            p === 'dark' ||
+            (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
