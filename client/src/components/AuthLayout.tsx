@@ -115,14 +115,7 @@ export function AuthLayout({
               <p className="mt-2 text-sm leading-relaxed text-slate-500">{subtitle}</p>
             </header>
 
-            {/*
-              Arbitrary-variant overrides re-tint the shared <Input>/<Select> focus
-              ring from navy to KNUST green for the auth screens only, higher
-              specificity than the components' own focus classes.
-            */}
-            <div className="[&_input:focus]:border-knust-500 [&_input:focus]:ring-knust-500/20 [&_select:focus]:border-knust-500 [&_select:focus]:ring-knust-500/20">
-              {children}
-            </div>
+            {children}
 
             <p className="mt-10 text-center text-xs leading-relaxed text-slate-400">
               Kwame Nkrumah University of Science and Technology

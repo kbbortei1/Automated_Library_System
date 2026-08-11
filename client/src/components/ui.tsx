@@ -38,7 +38,7 @@ export function Input({
     <label className="block">
       {label && <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>}
       <input
-        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 ${className}`}
+        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20 ${className}`}
         {...props}
       />
       {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
@@ -56,7 +56,7 @@ export function Select({
     <label className="block">
       {label && <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>}
       <select
-        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 ${className}`}
+        className={`w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-knust-500 focus:ring-2 focus:ring-knust-500/20 ${className}`}
         {...props}
       >
         {children}
@@ -75,7 +75,7 @@ export function Alert({
   const styles = {
     error: 'bg-red-50 text-red-700 border-red-200',
     success: 'bg-green-50 text-green-700 border-green-200',
-    info: 'bg-brand-50 text-brand-700 border-brand-200',
+    info: 'bg-knust-50 text-knust-700 border-knust-200',
   };
   return <div className={`rounded-lg border px-3.5 py-2.5 text-sm ${styles[kind]}`}>{children}</div>;
 }
@@ -176,7 +176,7 @@ export function Toggle({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
-        checked ? 'bg-navy-700' : 'bg-slate-300'
+        checked ? 'bg-knust-600' : 'bg-slate-300'
       }`}
     >
       <span
@@ -226,7 +226,7 @@ export function Avatar({ name, className = '' }: { name: string; className?: str
     .slice(0, 2)
     .join('')
     .toUpperCase();
-  const tones = ['bg-navy-700', 'bg-brand-600', 'bg-amber-500', 'bg-emerald-600', 'bg-rose-500'];
+  const tones = ['bg-knust-700', 'bg-knust-500', 'bg-amber-600', 'bg-emerald-600', 'bg-rose-500'];
   const tone = tones[name.charCodeAt(0) % tones.length];
   return (
     <span
