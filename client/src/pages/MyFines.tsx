@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { Card, EmptyState, Skeleton } from '../components/ui';
+import { CheckCircleIcon } from '../components/icons';
 import { formatDate, money } from '../lib/format';
 import type { Fine, FineStatus } from '../types';
 
@@ -63,7 +64,7 @@ export default function MyFines() {
       ) : !data?.fines.length ? (
         <Card className="p-0">
           <EmptyState
-            icon="✅"
+            icon={<CheckCircleIcon />}
             title="No fines"
             body="Nothing has been charged to your account. Return books by their due date to keep it that way."
           />
