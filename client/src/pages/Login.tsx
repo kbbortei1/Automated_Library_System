@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { apiErrorMessage } from '../lib/api';
-import { Alert, Button, Card, Input } from '../components/ui';
+import { AuthLayout } from '../components/AuthLayout';
+import { Alert, Button, Input } from '../components/ui';
 
 export default function Login() {
   const { login } = useAuth();
@@ -30,42 +31,50 @@ export default function Login() {
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-brand-700">Sign in to BiblioHub</h1>
-        <p className="mt-1 text-sm text-slate-500">Access your loans, reservations and fines.</p>
+    <AuthLayout
+      title="Sign in"
+      subtitle="Access your loans, reservations and fines at the Prempeh II Library."
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {error && <Alert>{error}</Alert>}
+
+        <Input
+          label="Email, student no. or staff ID"
+          type="text"
+          autoComplete="username"
+          placeholder="e.g. 20812345 or you@st.knust.edu.gh"
+          required
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+        />
+
+        <Input
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          placeholder="••••••••"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <Button type="submit" variant="knust" disabled={submitting} className="w-full py-2.5">
+          {submitting ? 'Signing in…' : 'Sign in'}
+        </Button>
+      </form>
+
+      <div className="mt-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-slate-200" />
+        <span className="text-xs uppercase tracking-wide text-slate-400">New here</span>
+        <span className="h-px flex-1 bg-slate-200" />
       </div>
-      <Card>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {error && <Alert>{error}</Alert>}
-          <Input
-            label="Email or member ID"
-            type="text"
-            autoComplete="username"
-            placeholder="email, staff ID, student no. or index"
-            required
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-          />
-          <Input
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button type="submit" disabled={submitting}>
-            {submitting ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
-        <p className="mt-4 text-center text-sm text-slate-500">
-          No account?{' '}
-          <Link to="/register" className="font-medium text-brand-600 hover:underline">
-            Register
-          </Link>
-        </p>
-      </Card>
-    </div>
+
+      <Link
+        to="/register"
+        className="mt-4 flex w-full items-center justify-center rounded-lg border border-knust-200 bg-knust-50 px-4 py-2.5 text-sm font-semibold text-knust-700 transition hover:bg-knust-100"
+      >
+        Create a library account
+      </Link>
+    </AuthLayout>
   );
 }
