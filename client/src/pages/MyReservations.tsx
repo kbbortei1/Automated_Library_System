@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../lib/api';
 import { Alert, Button, Card, EmptyState, Skeleton } from '../components/ui';
+import { BookmarkIcon } from '../components/icons';
 import { formatDate } from '../lib/format';
 import type { Reservation, ReservationStatus } from '../types';
 
@@ -87,7 +88,7 @@ export default function MyReservations() {
       ) : !data?.length ? (
         <Card className="p-0">
           <EmptyState
-            icon="🔖"
+            icon={<BookmarkIcon />}
             title="No reservations"
             body="Reserve a title that is on loan and you will join the queue for the next free copy."
             action={
