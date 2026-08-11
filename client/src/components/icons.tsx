@@ -94,3 +94,23 @@ export const CheckCircleIcon = (p: IconProps) => (
     <path d="M8.5 12.5l2.5 2.5 4.5-5" />
   </Svg>
 );
+
+export const BellIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M18 8.5a6 6 0 10-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z" />
+    <path d="M10.5 19a2 2 0 003 0" />
+  </Svg>
+);
+
+export const SunIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </Svg>
+);
+
+export const MoonIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+  </Svg>
+);
