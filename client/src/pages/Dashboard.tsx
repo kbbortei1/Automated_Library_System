@@ -5,8 +5,10 @@ import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 import { Badge, Card, Skeleton } from '../components/ui';
 import {
+  AlertTriangleIcon,
   BookmarkIcon,
   BookOpenIcon,
+  CheckCircleIcon,
   ClockIcon,
   CoinsIcon,
 } from '../components/icons';
@@ -62,11 +64,13 @@ function Tile({
 /** One row of the "needs your attention" banner. */
 function ActionRow({
   tone,
+  icon,
   text,
   to,
   cta,
 }: {
   tone: 'danger' | 'warn' | 'good';
+  icon: ReactNode;
   text: string;
   to: string;
   cta: string;
@@ -80,7 +84,10 @@ function ActionRow({
     <div
       className={`flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 ${styles}`}
     >
-      <span className="text-sm font-medium">{text}</span>
+      <span className="flex items-center gap-2.5 text-sm font-medium">
+        <span className="shrink-0 [&>svg]:h-5 [&>svg]:w-5">{icon}</span>
+        {text}
+      </span>
       <Link to={to} className="text-sm font-semibold underline underline-offset-2">
         {cta}
       </Link>
@@ -194,6 +201,7 @@ function MemberDashboard() {
           {overdue.length > 0 && (
             <ActionRow
               tone="danger"
+              icon={<AlertTriangleIcon />}
               text={`${overdue.length} book${overdue.length === 1 ? ' is' : 's are'} overdue. Return ${overdue.length === 1 ? 'it' : 'them'} to stop further fines.`}
               to="/my-loans"
               cta="View loans"
@@ -202,6 +210,7 @@ function MemberDashboard() {
           {ready.length > 0 && (
             <ActionRow
               tone="good"
+              icon={<CheckCircleIcon />}
               text={`${ready.length} reservation${ready.length === 1 ? ' is' : 's are'} ready for collection${
                 ready[0].expiresAt ? `, collect by ${formatDate(ready[0].expiresAt)}` : ''
               }.`}
@@ -212,6 +221,7 @@ function MemberDashboard() {
           {outstanding > 0 && (
             <ActionRow
               tone="warn"
+              icon={<CoinsIcon />}
               text={`You owe ${money(outstanding)} in unpaid fines, payable at the library desk.`}
               to="/my-fines"
               cta="View fines"
