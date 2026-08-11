@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { NotificationBell } from './NotificationBell';
+import { KnustCrest } from './KnustCrest';
 import { Avatar } from './ui';
 
 const LINKS = [
@@ -19,8 +20,8 @@ function TopLink({ to, label, onClick }: { to: string; label: string; onClick?: 
       className={({ isActive }) =>
         `border-b-2 px-1 pb-0.5 text-sm font-medium transition ${
           isActive
-            ? 'border-brand-600 text-brand-700'
-            : 'border-transparent text-slate-500 hover:text-brand-600'
+            ? 'border-knust-600 text-knust-700'
+            : 'border-transparent text-slate-500 hover:text-knust-600'
         }`
       }
     >
@@ -37,9 +38,12 @@ export function MemberLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center gap-8 px-4 py-3.5 sm:px-6">
-          <Link to="/" className="font-display text-xl font-extrabold tracking-tight text-navy-800">
-            BiblioHub
+        <nav className="mx-auto flex max-w-6xl items-center gap-8 px-4 py-3 sm:px-6">
+          <Link to="/" className="flex shrink-0 items-center gap-2.5">
+            <KnustCrest className="h-9 w-9" />
+            <span className="font-display text-lg font-extrabold leading-none tracking-tight text-knust-900">
+              KNUST Library
+            </span>
           </Link>
           <div className="hidden items-center gap-6 md:flex">
             {LINKS.map((l) => (
@@ -49,7 +53,10 @@ export function MemberLayout() {
 
           <div className="ml-auto flex items-center gap-2">
             <NotificationBell />
-            <Link to="/profile" className="rounded-full ring-2 ring-transparent transition hover:ring-navy-100">
+            <Link
+              to="/profile"
+              className="rounded-full ring-2 ring-transparent transition hover:ring-knust-100"
+            >
               <Avatar name={user?.fullName ?? '?'} />
             </Link>
             <button
@@ -103,10 +110,16 @@ export function MemberLayout() {
       <footer className="border-t border-slate-200 bg-white">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-lg font-bold text-navy-800">BiblioHub</h3>
-            <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-500">
-              Empowering scholarship and the joy of reading through a modern digital library
-              experience.
+            <div className="flex items-center gap-2.5">
+              <KnustCrest className="h-8 w-8" />
+              <h3 className="font-display text-lg font-bold text-knust-900">KNUST Library</h3>
+            </div>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-500">
+              The Prempeh II Library and the college libraries of Kwame Nkrumah University of
+              Science and Technology, in one catalogue.
+            </p>
+            <p className="mt-3 font-display text-sm italic text-knust-700">
+              Nyansapɔ Wɔsane No Badwenma
             </p>
           </div>
           <div>
@@ -122,17 +135,17 @@ export function MemberLayout() {
             <h4 className="text-sm font-semibold text-slate-800">Account</h4>
             <ul className="mt-3 space-y-2 text-sm text-slate-500">
               <li>
-                <Link to="/my-loans" className="hover:text-navy-700">
+                <Link to="/my-loans" className="hover:text-knust-700">
                   Reading History
                 </Link>
               </li>
               <li>
-                <Link to="/profile" className="hover:text-navy-700">
+                <Link to="/profile" className="hover:text-knust-700">
                   Profile Settings
                 </Link>
               </li>
               <li>
-                <Link to="/notifications" className="hover:text-navy-700">
+                <Link to="/notifications" className="hover:text-knust-700">
                   Notifications
                 </Link>
               </li>
@@ -141,7 +154,10 @@ export function MemberLayout() {
         </div>
         <div className="border-t border-slate-100">
           <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-4 py-4 text-xs text-slate-400 sm:flex-row sm:px-6">
-            <span>© {new Date().getFullYear()} BiblioHub Systems. All rights reserved.</span>
+            <span>
+              © {new Date().getFullYear()} Kwame Nkrumah University of Science and Technology,
+              Kumasi.
+            </span>
             <span className="flex gap-4">
               <span>Privacy Policy</span>
               <span>Terms of Service</span>
