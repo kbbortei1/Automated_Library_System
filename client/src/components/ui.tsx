@@ -113,8 +113,10 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
+      {/* The chip sizes whatever icon it is given, so callers pass a bare
+          <SomeIcon /> without repeating dimensions at every call site. */}
       {icon && (
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-2xl text-accent">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent-softfg [&>svg]:h-6 [&>svg]:w-6">
           {icon}
         </span>
       )}
