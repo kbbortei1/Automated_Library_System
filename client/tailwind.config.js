@@ -31,6 +31,32 @@ export default {
           600: '#0051d5',
           700: '#003ea8',
         },
+        // KNUST institutional palette. The university's colours are lust (red),
+        // black, forest green and yellow; `knust` is a ramp around the official
+        // forest green (#228b22), `gold` around the Golden Stool yellow.
+        knust: {
+          50: '#eef7ee',
+          100: '#d6ecd7',
+          200: '#a9d8ab',
+          300: '#74bd78',
+          400: '#44a24b',
+          500: '#228b22',
+          600: '#1a6f1f',
+          700: '#15571a',
+          800: '#114516',
+          900: '#0b2f0f',
+        },
+        gold: {
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f5b301',
+          600: '#d99700',
+          700: '#a97300',
+        },
+        lust: '#e62020',
       },
       boxShadow: {
         card: '0 1px 2px 0 rgb(15 36 67 / 0.04), 0 1px 3px 0 rgb(15 36 67 / 0.06)',
