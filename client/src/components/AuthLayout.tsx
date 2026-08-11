@@ -61,8 +61,8 @@ export function AuthLayout({
       <aside className="relative hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
         <LibraryBackdrop />
 
-        <div className="relative flex items-center gap-4">
-          <KnustCrest className="h-16 w-16" />
+        <div className="relative flex items-center gap-4 [text-shadow:0_1px_3px_rgb(0_0_0_/_0.55)]">
+          <KnustCrest className="h-20 w-20" />
           <div>
             <div className="font-display text-xl font-bold leading-tight text-white">KNUST</div>
             <div className="text-xs uppercase tracking-[0.18em] text-gold-400">University Library</div>
