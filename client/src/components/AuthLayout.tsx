@@ -41,7 +41,7 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
       <div className="font-display text-2xl font-bold text-gold-400">{value}</div>
-      <div className="mt-0.5 text-xs uppercase tracking-wide text-white/60">{label}</div>
+      <div className="mt-0.5 text-xs uppercase tracking-wide text-white/70">{label}</div>
     </div>
   );
 }
@@ -69,22 +69,25 @@ export function AuthLayout({
           </div>
         </div>
 
-        <div className="relative max-w-lg">
+        {/* The facade behind this block is pale concrete, so the copy carries a
+            soft text-shadow on top of the scrim — belt and braces against a
+            replacement photo with different exposure. */}
+        <div className="relative max-w-lg [text-shadow:0_1px_3px_rgb(0_0_0_/_0.55)]">
           <h2 className="font-display text-4xl font-bold leading-tight text-white xl:text-5xl">
             Prempeh&nbsp;II Library
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-white/75">
+          <p className="mt-4 text-base leading-relaxed text-white/90">
             The management centre of the KNUST Library System — serving the Prempeh&nbsp;II Library,
             six college libraries and the distance-learning collections from one catalogue.
           </p>
 
           <blockquote className="mt-8 border-l-2 border-gold-500 pl-4">
             <p className="font-display text-lg italic text-gold-300">{MOTTO}</p>
-            <footer className="mt-1 text-sm text-white/60">{MOTTO_EN}</footer>
+            <footer className="mt-1 text-sm text-white/85">{MOTTO_EN}</footer>
           </blockquote>
         </div>
 
-        <div className="relative flex gap-10 border-t border-white/15 pt-6">
+        <div className="relative flex gap-10 border-t border-white/20 pt-6 [text-shadow:0_1px_3px_rgb(0_0_0_/_0.55)]">
           <Stat value="1952" label="Est." />
           <Stat value="7" label="Libraries" />
           <Stat value="24/7" label="Online access" />
