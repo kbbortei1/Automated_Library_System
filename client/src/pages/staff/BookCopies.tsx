@@ -2,7 +2,9 @@ import { useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
-import { Alert, Button, Card, Input, Select } from '../../components/ui';
+import { ArrowLeftIcon, BookIcon } from '../../components/icons';
+import { DataTable, type Column } from '../../components/DataTable';
+import { Alert, Button, Card, Input, Select, Skeleton } from '../../components/ui';
 import type { Book, BookCopy, CopyStatus } from '../../types';
 
 const STATUS_STYLES: Record<CopyStatus, string> = {
@@ -58,16 +60,79 @@ export default function BookCopies() {
     addCopy.mutate();
   }
 
-  if (isLoading) return <p className="text-fg-muted">Loading…</p>;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
   if (!book) return <Alert>Book not found.</Alert>;
 
   const copies = book.copies ?? [];
 
+  const columns: Column<BookCopy>[] = [
+    {
+      header: 'Accession #',
+      primary: true,
+      className: 'font-medium text-fg',
+      cell: (c) => c.accessionNumber,
+    },
+    { header: 'Shelf', cell: (c) => c.shelfLocation },
+    {
+      header: 'Status',
+      cell: (c) => (
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[c.status]}`}>
+          {c.status}
+        </span>
+      ),
+    },
+    {
+      header: 'Actions',
+      action: true,
+      cell: (c) => {
+        // A copy that is out or on hold cannot be re-statused or removed here;
+        // it has to come back through the returns desk first.
+        const locked = c.status === 'CHECKED_OUT' || c.status === 'RESERVED';
+        return (
+          <div className="flex items-center gap-2">
+            <Select
+              value={c.status}
+              disabled={locked}
+              onChange={(e) =>
+                setStatus.mutate({ copyId: c.id, status: e.target.value as CopyStatus })
+              }
+            >
+              <option value="AVAILABLE">AVAILABLE</option>
+              <option value="LOST">LOST</option>
+              <option value="DAMAGED">DAMAGED</option>
+              {locked && <option value={c.status}>{c.status}</option>}
+            </Select>
+            <button
+              disabled={c.status === 'CHECKED_OUT'}
+              onClick={() => {
+                if (confirm('Remove this copy?')) removeCopy.mutate(c.id);
+              }}
+              className="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
+            >
+              Remove
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link to="/staff/books" className="text-sm text-accent hover:underline">
-          ← Back to books
+        <Link
+          to="/staff/books"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-accent hover:underline"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          Back to books
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-fg">{book.title}</h1>
         <p className="text-fg-muted">
@@ -98,65 +163,15 @@ export default function BookCopies() {
         </form>
       </Card>
 
-      <Card className="overflow-x-auto p-0">
-        {!copies.length ? (
-          <p className="p-6 text-fg-muted">No copies yet.</p>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-surface-2 text-fg-muted">
-              <tr>
-                <th className="px-4 py-3 font-medium">Accession #</th>
-                <th className="px-4 py-3 font-medium">Shelf</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {copies.map((c: BookCopy) => {
-                const locked = c.status === 'CHECKED_OUT' || c.status === 'RESERVED';
-                return (
-                  <tr key={c.id} className="border-b border-border-subtle">
-                    <td className="px-4 py-3 font-medium text-fg">{c.accessionNumber}</td>
-                    <td className="px-4 py-3 text-fg-muted">{c.shelfLocation}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[c.status]}`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={c.status}
-                          disabled={locked}
-                          onChange={(e) =>
-                            setStatus.mutate({ copyId: c.id, status: e.target.value as CopyStatus })
-                          }
-                        >
-                          <option value="AVAILABLE">AVAILABLE</option>
-                          <option value="LOST">LOST</option>
-                          <option value="DAMAGED">DAMAGED</option>
-                          {locked && <option value={c.status}>{c.status}</option>}
-                        </Select>
-                        <button
-                          disabled={c.status === 'CHECKED_OUT'}
-                          onClick={() => {
-                            if (confirm('Remove this copy?')) removeCopy.mutate(c.id);
-                          }}
-                          className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 disabled:opacity-40"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </Card>
+      <DataTable
+        columns={columns}
+        rows={copies}
+        keyOf={(c) => c.id}
+        emptyIcon={<BookIcon />}
+        emptyTitle="No copies yet"
+        emptyBody="Add an accession number above to put the first physical copy on the shelf."
+      />
+
     </div>
   );
 }
