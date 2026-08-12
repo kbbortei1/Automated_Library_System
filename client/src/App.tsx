@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 import { RoleLayout } from './components/RoleLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -15,8 +15,6 @@ import NotFound from './pages/NotFound';
 import Members from './pages/staff/Members';
 import Books from './pages/staff/Books';
 import BookCopies from './pages/staff/BookCopies';
-import Checkout from './pages/staff/Checkout';
-import Returns from './pages/staff/Returns';
 import Loans from './pages/staff/Loans';
 import Circulation from './pages/staff/Circulation';
 import ReservationQueue from './pages/staff/ReservationQueue';
@@ -51,8 +49,17 @@ export default function App() {
             <Route path="/staff/books" element={<Books />} />
             <Route path="/staff/books/:id/copies" element={<BookCopies />} />
             <Route path="/staff/circulation" element={<Circulation />} />
-            <Route path="/staff/checkout" element={<Checkout />} />
-            <Route path="/staff/returns" element={<Returns />} />
+            {/* Checking out and returning are modes of the circulation
+                console now, not separate screens. These redirects keep old
+                links and bookmarks working. */}
+            <Route
+              path="/staff/checkout"
+              element={<Navigate to="/staff/circulation" replace />}
+            />
+            <Route
+              path="/staff/returns"
+              element={<Navigate to="/staff/circulation?mode=return" replace />}
+            />
             <Route path="/staff/loans" element={<Loans />} />
             <Route path="/staff/members" element={<Members />} />
             <Route path="/staff/reservations" element={<ReservationQueue />} />

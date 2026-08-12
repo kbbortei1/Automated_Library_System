@@ -135,7 +135,11 @@ export default function StaffDashboard() {
                 <h2 className="text-lg font-bold text-accent-fg">Quick Actions</h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <QuickAction to="/staff/circulation" title="Checkout Book" desc="Scan ISBN or enter member ID" />
-                  <QuickAction to="/staff/circulation" title="Return Book" desc="Process standard return" />
+                  <QuickAction
+                    to="/staff/circulation?mode=return"
+                    title="Return Book"
+                    desc="Scan the copy coming back"
+                  />
                   <QuickAction to="/staff/members" title="Members" desc="Manage patron accounts" />
                 </div>
               </div>

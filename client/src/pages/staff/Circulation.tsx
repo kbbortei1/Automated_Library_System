@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Avatar, Badge, Button, Card } from '../../components/ui';
 import { BookCover } from '../../components/BookCover';
 import { StaffHeader } from '../../components/StaffHeader';
-import { CheckIcon } from '../../components/icons';
+import { CheckIcon, PinIcon } from '../../components/icons';
 import { useScanFocus } from '../../lib/useScanFocus';
 import { formatDate, money } from '../../lib/format';
 import type { Eligibility, Loan, Paginated, User } from '../../types';
@@ -26,8 +26,24 @@ function StepBadge({ n }: { n: number }) {
   );
 }
 
+interface ReturnResult {
+  loan: { copy: { book: { title: string } } };
+  fine: { amount: string; reason: string } | null;
+  reservationPromoted: boolean;
+}
+
 export default function Circulation() {
   const qc = useQueryClient();
+  // Checking out and taking a book back are the same job at the same desk
+  // with the same scanner, so they are modes here rather than separate
+  // screens. The mode lives in the URL so the dashboard can link straight to
+  // returns and a bookmark still lands where it used to.
+  const [params, setParams] = useSearchParams();
+  const mode: 'checkout' | 'return' = params.get('mode') === 'return' ? 'return' : 'checkout';
+  const setMode = (m: 'checkout' | 'return') => {
+    setParams(m === 'return' ? { mode: 'return' } : {}, { replace: true });
+  };
+  const [returnInfo, setReturnInfo] = useState<ReturnResult | null>(null);
 
   // Step 1: member
   const [memberSearch, setMemberSearch] = useState('');
@@ -84,7 +100,7 @@ export default function Circulation() {
   const canScan = !!member && !!eligibility?.eligible;
   const memberRef = useScanFocus<HTMLInputElement>(!member, memberCycle);
   const accessionRef = useScanFocus<HTMLInputElement>(canScan, scanCycle);
-  const returnRef = useScanFocus<HTMLInputElement>(false, returnCycle);
+  const returnRef = useScanFocus<HTMLInputElement>(mode === 'return', returnCycle);
 
   const lookupCopy = useMutation({
     mutationFn: async () =>
@@ -125,18 +141,15 @@ export default function Circulation() {
       const c = (await api.get<CopyLookup>('/catalog/copies/lookup', { params: { accessionNumber: returnAccession } })).data;
       return (await api.post('/circulation/return', { copyId: c.id })).data;
     },
-    onSuccess: (r: { loan: { copy: { book: { title: string } } }; fine: { amount: string } | null }) => {
-      setToast({
-        kind: r.fine ? 'error' : 'success',
-        text: r.fine
-          ? `Returned "${r.loan.copy.book.title}", fine ${money(r.fine.amount)}`
-          : `Returned "${r.loan.copy.book.title}" on time`,
-      });
+    onSuccess: (r: ReturnResult) => {
+      setReturnInfo(r);
+      setToast(null);
       setReturnAccession('');
       setReturnCycle((n) => n + 1);
       qc.invalidateQueries({ queryKey: ['recent-activity'] });
     },
     onError: (e) => {
+      setReturnInfo(null);
       setToast({ kind: 'error', text: apiErrorMessage(e) });
       setReturnCycle((n) => n + 1);
     },
@@ -160,30 +173,91 @@ export default function Circulation() {
 
   return (
     <div>
-      <StaffHeader title="Circulation Console" subtitle="Process loans, returns, and track inventory.">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            quickReturn.mutate();
-          }}
-          className="hidden items-center gap-2 md:flex"
-        >
-          <input
-            ref={returnRef}
-            value={returnAccession}
-            onChange={(e) => setReturnAccession(e.target.value)}
-            placeholder="Scan accession for return"
-            className="w-56 rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-          />
-          <Button variant="secondary" type="submit" disabled={!returnAccession || quickReturn.isPending}>
-            Quick Return
-          </Button>
-        </form>
-      </StaffHeader>
+      <StaffHeader
+        title="Circulation Console"
+        subtitle="Check books out and take them back at the desk."
+      />
+
+      <div className="mb-6 inline-flex rounded-lg border border-border bg-surface-2 p-1">
+        {(['checkout', 'return'] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            aria-pressed={mode === m}
+            className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
+              mode === m
+                ? 'bg-accent text-accent-fg shadow-sm'
+                : 'text-fg-muted hover:text-fg'
+            }`}
+          >
+            {m === 'checkout' ? 'Check out' : 'Return'}
+          </button>
+        ))}
+      </div>
 
       {toast && <div className="mb-5"><Alert kind={toast.kind}>{toast.text}</Alert></div>}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      {mode === 'return' && (
+        <div className="max-w-2xl">
+          <Card>
+            <h2 className="text-lg font-bold text-fg">Scan the copy being returned</h2>
+            <p className="mb-4 mt-1 text-sm text-fg-muted">
+              No member lookup needed: the accession number identifies the loan.
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (returnAccession.trim()) quickReturn.mutate();
+              }}
+              className="flex flex-wrap items-end gap-3"
+            >
+              <div className="min-w-[16rem] flex-1">
+                <label className="mb-1.5 block text-sm font-medium text-fg">
+                  Accession number
+                </label>
+                <input
+                  ref={returnRef}
+                  value={returnAccession}
+                  onChange={(e) => setReturnAccession(e.target.value)}
+                  placeholder="Scan or type the accession number…"
+                  className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                />
+              </div>
+              <Button
+                variant="knust"
+                type="submit"
+                disabled={!returnAccession.trim() || quickReturn.isPending}
+              >
+                {quickReturn.isPending ? 'Returning…' : 'Return'}
+              </Button>
+            </form>
+          </Card>
+
+          {returnInfo && (
+            <div className="mt-4">
+              <Alert kind={returnInfo.fine ? 'error' : 'success'}>
+                <div className="font-medium">Returned: {returnInfo.loan.copy.book.title}</div>
+                {returnInfo.fine ? (
+                  <div>
+                    Overdue fine issued: {money(returnInfo.fine.amount)} ({returnInfo.fine.reason})
+                  </div>
+                ) : (
+                  <div>No fine, returned on time.</div>
+                )}
+                {returnInfo.reservationPromoted && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <PinIcon className="h-4 w-4 shrink-0" />
+                    Held for the next member in the reservation queue.
+                  </div>
+                )}
+              </Alert>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className={`grid gap-6 lg:grid-cols-2 ${mode === 'return' ? 'hidden' : ''}`}>
         {/* Step 1: member */}
         <Card>
           <div className="mb-4 flex items-center gap-3">
