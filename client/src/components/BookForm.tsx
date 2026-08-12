@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Input } from './ui';
-import type { Book } from '../types';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../lib/api';
+import { Alert, Button, Input, Select } from './ui';
+import type { Book, Category } from '../types';
 
 export interface BookFormValues {
   isbn: string;
@@ -30,6 +32,11 @@ function toFormValues(book?: Book): BookFormValues {
   };
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+// Allow next year for forthcoming titles; 1500 covers anything a university
+// library realistically holds.
+const YEARS = Array.from({ length: CURRENT_YEAR + 1 - 1500 + 1 }, (_, i) => CURRENT_YEAR + 1 - i);
+
 export function BookForm({
   book,
   onSubmit,
@@ -44,6 +51,12 @@ export function BookForm({
   submitting?: boolean;
 }) {
   const [v, setV] = useState<BookFormValues>(toFormValues(book));
+  const [addingCategory, setAddingCategory] = useState(false);
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => (await api.get<Category[]>('/catalog/categories')).data,
+  });
   const set = (k: keyof BookFormValues) => (e: { target: { value: string } }) =>
     setV((prev) => ({ ...prev, [k]: e.target.value }));
 
@@ -71,13 +84,19 @@ export function BookForm({
       {error && <Alert>{error}</Alert>}
       <div className="grid gap-4 sm:grid-cols-2">
         <Input label="ISBN" required value={v.isbn} onChange={set('isbn')} />
-        <Input
+        <Select
           label="Publication year"
-          type="number"
           required
           value={v.publicationYear}
           onChange={set('publicationYear')}
-        />
+        >
+          <option value="">Select a year…</option>
+          {YEARS.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </Select>
       </div>
       <Input label="Title" required value={v.title} onChange={set('title')} />
       <label className="block">
@@ -96,7 +115,39 @@ export function BookForm({
           value={v.authors}
           onChange={set('authors')}
         />
-        <Input label="Category" required value={v.category} onChange={set('category')} />
+        <div>
+          <Select
+            label="Category"
+            required={!addingCategory}
+            value={addingCategory ? '__new' : v.category}
+            onChange={(e) => {
+              if (e.target.value === '__new') {
+                setAddingCategory(true);
+                setV((prev) => ({ ...prev, category: '' }));
+              } else {
+                setAddingCategory(false);
+                setV((prev) => ({ ...prev, category: e.target.value }));
+              }
+            }}
+          >
+            <option value="">Select a category…</option>
+            {(categories ?? []).map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+            <option value="__new">+ New category…</option>
+          </Select>
+          {addingCategory && (
+            <Input
+              className="mt-2"
+              required
+              placeholder="New category name"
+              value={v.category}
+              onChange={set('category')}
+            />
+          )}
+        </div>
         <Input label="Publisher" required value={v.publisher} onChange={set('publisher')} />
         <Input label="Edition" value={v.edition} onChange={set('edition')} />
         <Input label="Language" value={v.language} onChange={set('language')} />
