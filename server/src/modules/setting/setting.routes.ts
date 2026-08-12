@@ -10,6 +10,16 @@ export const settingRouter = Router();
 
 const updateSettingSchema = z.object({ value: z.string() });
 
+// The published policy, readable by any signed-in user. Declared before the
+// staff route below purely for readability; the paths do not overlap.
+settingRouter.get(
+  '/policy',
+  requireAuth,
+  asyncHandler(async (_req, res) => {
+    res.json(await SettingService.getPublicPolicy());
+  }),
+);
+
 settingRouter.get(
   '/',
   requireAuth,

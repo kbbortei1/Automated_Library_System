@@ -37,6 +37,29 @@ const DEFAULT_SETTINGS: { key: string; value: string; description: string }[] = 
   { key: 'borrowing_limit_faculty', value: '10', description: 'Borrowing limit for FACULTY members' },
   { key: 'borrowing_limit_public', value: '3', description: 'Borrowing limit for PUBLIC members' },
   { key: 'due_soon_reminder_days', value: '2', description: 'Days before due date to send reminder' },
+  // Published contact details, shown to members in the Support pages. Seeded
+  // empty on purpose: the pages say the detail has not been published yet
+  // rather than showing a number nobody verified.
+  {
+    key: 'library_phone',
+    value: '',
+    description: 'Library enquiries phone number, shown to members',
+  },
+  {
+    key: 'library_email',
+    value: '',
+    description: 'Library enquiries email address, shown to members',
+  },
+  {
+    key: 'library_hours',
+    value: '',
+    description: 'Opening hours, free text, shown to members',
+  },
+  {
+    key: 'library_locations',
+    value: '',
+    description: 'One library per line, as "Name | Where to find it | Hours"',
+  },
 ];
 
 async function main() {

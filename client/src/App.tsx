@@ -12,6 +12,11 @@ import MyReservations from './pages/MyReservations';
 import MyFines from './pages/MyFines';
 import Notifications from './pages/Notifications';
 import NotFound from './pages/NotFound';
+import HelpCenter from './pages/help/HelpCenter';
+import BorrowingRules from './pages/help/BorrowingRules';
+import Contact from './pages/help/Contact';
+import Locations from './pages/help/Locations';
+import Privacy from './pages/help/Privacy';
 import Members from './pages/staff/Members';
 import Books from './pages/staff/Books';
 import BookCopies from './pages/staff/BookCopies';
@@ -38,6 +43,14 @@ export default function App() {
           <Route path="/catalogue/:id" element={<BookDetail />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} />
+
+          {/* Support. Reads the published policy, so any signed-in role can
+              open these, not members only. */}
+          <Route path="/help" element={<HelpCenter />} />
+          <Route path="/help/borrowing-rules" element={<BorrowingRules />} />
+          <Route path="/help/locations" element={<Locations />} />
+          <Route path="/help/contact" element={<Contact />} />
+          <Route path="/help/privacy" element={<Privacy />} />
 
           {/* Member self-service */}
           <Route path="/my-loans" element={<MyLoans />} />

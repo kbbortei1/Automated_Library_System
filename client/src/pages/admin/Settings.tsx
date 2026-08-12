@@ -12,7 +12,10 @@ interface Setting {
   description: string | null;
 }
 
-const FIELD_META: Record<string, { label: string; helper: string; prefix?: string }> = {
+const FIELD_META: Record<
+  string,
+  { label: string; helper: string; prefix?: string; multiline?: boolean }
+> = {
   default_loan_period_days: { label: 'Default Loan Period (Days)', helper: 'The standard duration a book can be checked out.' },
   max_renewals: { label: 'Max Renewals', helper: 'Number of times a user can extend their loan.' },
   due_soon_reminder_days: { label: 'Reminder Window (Days Before Due)', helper: 'Days before due date to send automated notifications.' },
@@ -22,6 +25,17 @@ const FIELD_META: Record<string, { label: string; helper: string; prefix?: strin
   borrowing_limit_student: { label: 'Student Borrowing Limit', helper: 'Max concurrent loans for students.' },
   borrowing_limit_faculty: { label: 'Faculty Borrowing Limit', helper: 'Max concurrent loans for faculty.' },
   borrowing_limit_public: { label: 'Public Borrowing Limit', helper: 'Max concurrent loans for public members.' },
+  max_renewals_student: { label: 'Student Renewals', helper: 'Renewals per loan for students.' },
+  max_renewals_faculty: { label: 'Faculty Renewals', helper: 'Renewals per loan for faculty.' },
+  max_renewals_public: { label: 'Public Renewals', helper: 'Renewals per loan for public members.' },
+  library_phone: { label: 'Enquiries Phone', helper: 'Shown to members on Contact Staff. Leave blank to publish nothing.' },
+  library_email: { label: 'Enquiries Email', helper: 'Shown to members on Contact Staff. Leave blank to publish nothing.' },
+  library_hours: { label: 'Opening Hours', helper: 'Free text, for example "Mon to Fri, 8am to 8pm".' },
+  library_locations: {
+    label: 'Library Locations',
+    helper: 'One library per line, as "Name | Where to find it | Hours". Blank hides the list.',
+    multiline: true,
+  },
 };
 
 function Field({
@@ -43,13 +57,22 @@ function Field({
             {meta.prefix}
           </span>
         )}
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={`w-full rounded-lg border border-border bg-surface-2 py-2.5 text-sm outline-none focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent/20 ${
-            meta.prefix ? 'pl-12 pr-3.5' : 'px-3.5'
-          }`}
-        />
+        {meta.multiline ? (
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={4}
+            className="w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm outline-none focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent/20"
+          />
+        ) : (
+          <input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={`w-full rounded-lg border border-border bg-surface-2 py-2.5 text-sm outline-none focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent/20 ${
+              meta.prefix ? 'pl-12 pr-3.5' : 'px-3.5'
+            }`}
+          />
+        )}
       </div>
       {meta.helper && <p className="mt-1 text-xs italic text-fg-subtle">{meta.helper}</p>}
     </div>
@@ -166,6 +189,29 @@ export default function Settings() {
             <Field k="borrowing_limit_faculty" value={get('borrowing_limit_faculty')} onChange={(v) => setEdits((e) => ({ ...e, borrowing_limit_faculty: v }))} />
             <Field k="borrowing_limit_public" value={get('borrowing_limit_public')} onChange={(v) => setEdits((e) => ({ ...e, borrowing_limit_public: v }))} />
           </div>
+          {/* Per-type renewals override Max Renewals above, which is only the
+              fallback where a type has no value of its own. */}
+          <div className="grid gap-5 sm:grid-cols-3">
+            <Field k="max_renewals_student" value={get('max_renewals_student')} onChange={(v) => setEdits((e) => ({ ...e, max_renewals_student: v }))} />
+            <Field k="max_renewals_faculty" value={get('max_renewals_faculty')} onChange={(v) => setEdits((e) => ({ ...e, max_renewals_faculty: v }))} />
+            <Field k="max_renewals_public" value={get('max_renewals_public')} onChange={(v) => setEdits((e) => ({ ...e, max_renewals_public: v }))} />
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          icon="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
+          title="Published Contact Details"
+        >
+          <p className="-mt-2 text-sm text-fg-muted">
+            Shown to members on the Contact Staff and Library Locations pages. Anything left blank
+            is not published, and the page says so rather than showing an empty field.
+          </p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field k="library_phone" value={get('library_phone')} onChange={(v) => setEdits((e) => ({ ...e, library_phone: v }))} />
+            <Field k="library_email" value={get('library_email')} onChange={(v) => setEdits((e) => ({ ...e, library_email: v }))} />
+          </div>
+          <Field k="library_hours" value={get('library_hours')} onChange={(v) => setEdits((e) => ({ ...e, library_hours: v }))} />
+          <Field k="library_locations" value={get('library_locations')} onChange={(v) => setEdits((e) => ({ ...e, library_locations: v }))} />
         </SectionCard>
 
         {/* Staff & user roles */}

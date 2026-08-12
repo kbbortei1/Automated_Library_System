@@ -131,10 +131,18 @@ export function MemberLayout() {
           <div>
             <h4 className="text-sm font-semibold text-fg">Support</h4>
             <ul className="mt-3 space-y-2 text-sm text-fg-muted">
-              <li>Borrowing Rules</li>
-              <li>Library Locations</li>
-              <li>Contact Staff</li>
-              <li>Help Center</li>
+              {[
+                { to: '/help/borrowing-rules', label: 'Borrowing Rules' },
+                { to: '/help/locations', label: 'Library Locations' },
+                { to: '/help/contact', label: 'Contact Staff' },
+                { to: '/help', label: 'Help Centre' },
+              ].map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className="hover:text-accent">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
@@ -164,9 +172,16 @@ export function MemberLayout() {
               © {new Date().getFullYear()} Kwame Nkrumah University of Science and Technology,
               Kumasi.
             </span>
+            {/* Deliberately not labelled "Privacy Policy" or "Terms of
+                Service". Neither document exists, and pointing at a page that
+                is not one would be worse than not offering the link. */}
             <span className="flex gap-4">
-              <span>Privacy Policy</span>
-              <span>Terms of Service</span>
+              <Link to="/help/privacy" className="hover:text-accent">
+                Your Data
+              </Link>
+              <Link to="/help/borrowing-rules" className="hover:text-accent">
+                Borrowing Rules
+              </Link>
             </span>
           </div>
         </div>
