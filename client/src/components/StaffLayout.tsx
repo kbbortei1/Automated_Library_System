@@ -8,6 +8,8 @@ import { NotificationBell } from './NotificationBell';
 import { CommandPalette } from './CommandPalette';
 import {
   AlertTriangleIcon,
+  ArrowLeftIcon,
+  BooksIcon,
   BanknoteIcon,
   BookOpenIcon,
   CalendarIcon,
@@ -26,6 +28,8 @@ const icons = {
   reservations: <CalendarIcon />,
   members: <UsersIcon />,
   fines: <BanknoteIcon />,
+  returns: <ArrowLeftIcon />,
+  loans: <BooksIcon />,
   defaulters: <AlertTriangleIcon />,
   settings: <SettingsIcon />,
 };
@@ -41,6 +45,8 @@ const PRIMARY: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: 'dashboard' },
   { to: '/staff/books', label: 'Catalogue', icon: 'catalogue' },
   { to: '/staff/circulation', label: 'Circulation', icon: 'circulation' },
+  { to: '/staff/returns', label: 'Returns', icon: 'returns' },
+  { to: '/staff/loans', label: 'Loans', icon: 'loans' },
   { to: '/staff/reservations', label: 'Reservations', icon: 'reservations' },
   { to: '/staff/members', label: 'Members', icon: 'members' },
   { to: '/staff/fines', label: 'Fines', icon: 'fines' },
