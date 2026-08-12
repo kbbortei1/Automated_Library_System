@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
@@ -6,6 +6,7 @@ import { Alert, Avatar, Badge, Button, Card } from '../../components/ui';
 import { BookCover } from '../../components/BookCover';
 import { StaffHeader } from '../../components/StaffHeader';
 import { CheckIcon } from '../../components/icons';
+import { useScanFocus } from '../../lib/useScanFocus';
 import { formatDate, money } from '../../lib/format';
 import type { Eligibility, Loan, Paginated, User } from '../../types';
 
@@ -19,7 +20,7 @@ interface CopyLookup {
 
 function StepBadge({ n }: { n: number }) {
   return (
-    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg">
       {n}
     </span>
   );
@@ -39,6 +40,10 @@ export default function Circulation() {
 
   // Quick return
   const [returnAccession, setReturnAccession] = useState('');
+
+  // Bumped after each processed scan so focus returns to the field.
+  const [scanCycle, setScanCycle] = useState(0);
+  const [returnCycle, setReturnCycle] = useState(0);
 
   const [toast, setToast] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
@@ -69,16 +74,26 @@ export default function Circulation() {
       (await api.get<Paginated<Loan>>('/circulation/loans', { params: { pageSize: 6 } })).data,
   });
 
+  // Scanner focus. A handheld scanner types then presses Enter, so the field
+  // has to already hold focus; the cycle counters hand focus back after each
+  // scan is processed.
+  const canScan = !!member && !!eligibility?.eligible;
+  const accessionRef = useScanFocus<HTMLInputElement>(canScan, scanCycle);
+  const returnRef = useScanFocus<HTMLInputElement>(!member, returnCycle);
+
   const lookupCopy = useMutation({
     mutationFn: async () =>
       (await api.get<CopyLookup>('/catalog/copies/lookup', { params: { accessionNumber: accession } })).data,
     onSuccess: (c) => {
       setCopy(c);
       setCopyError('');
+      setScanCycle((n) => n + 1);
     },
     onError: (e) => {
       setCopy(null);
       setCopyError(apiErrorMessage(e));
+      setAccession('');
+      setScanCycle((n) => n + 1);
     },
   });
 
@@ -92,6 +107,7 @@ export default function Circulation() {
       });
       setCopy(null);
       setAccession('');
+      setScanCycle((n) => n + 1);
       qc.invalidateQueries({ queryKey: ['recent-activity'] });
       qc.invalidateQueries({ queryKey: ['member-active-loans'] });
       qc.invalidateQueries({ queryKey: ['eligibility'] });
@@ -112,10 +128,29 @@ export default function Circulation() {
           : `Returned "${r.loan.copy.book.title}" on time`,
       });
       setReturnAccession('');
+      setReturnCycle((n) => n + 1);
       qc.invalidateQueries({ queryKey: ['recent-activity'] });
     },
-    onError: (e) => setToast({ kind: 'error', text: apiErrorMessage(e) }),
+    onError: (e) => {
+      setToast({ kind: 'error', text: apiErrorMessage(e) });
+      setReturnCycle((n) => n + 1);
+    },
   });
+
+  // Esc abandons the transaction and returns to the member step, so a
+  // mis-scan does not need the mouse to clear.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setCopy(null);
+      setAccession('');
+      setCopyError('');
+      setMember(null);
+      setMemberSearch('');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div>
@@ -128,6 +163,7 @@ export default function Circulation() {
           className="hidden items-center gap-2 md:flex"
         >
           <input
+            ref={returnRef}
             value={returnAccession}
             onChange={(e) => setReturnAccession(e.target.value)}
             placeholder="Scan accession for return"
@@ -225,10 +261,17 @@ export default function Circulation() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              lookupCopy.mutate();
+              // With a copy already on screen and available, a second Enter
+              // confirms rather than re-looking-up: scan, Enter, Enter, next.
+              if (copy && copy.status === 'AVAILABLE' && !checkout.isPending) {
+                checkout.mutate();
+                return;
+              }
+              if (accession.trim()) lookupCopy.mutate();
             }}
           >
             <input
+              ref={accessionRef}
               value={accession}
               onChange={(e) => setAccession(e.target.value)}
               disabled={!member || !eligibility?.eligible}
