@@ -5,7 +5,7 @@ import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Avatar, Badge, Button, Card } from '../../components/ui';
 import { BookCover } from '../../components/BookCover';
 import { StaffHeader } from '../../components/StaffHeader';
-import { CheckIcon } from '../../components/icons';
+import { ArrowLeftIcon, CheckIcon, PinIcon } from '../../components/icons';
 import { useScanFocus } from '../../lib/useScanFocus';
 import { formatDate, money } from '../../lib/format';
 import type { Eligibility, Loan, Paginated, User } from '../../types';
@@ -16,6 +16,12 @@ interface CopyLookup {
   shelfLocation: string;
   status: string;
   book: { id: string; title: string; isbn: string };
+}
+
+interface ReturnResult {
+  loan: { copy: { book: { title: string } } };
+  fine: { amount: string; reason: string } | null;
+  reservationPromoted: boolean;
 }
 
 function StepBadge({ n }: { n: number }) {
@@ -29,6 +35,10 @@ function StepBadge({ n }: { n: number }) {
 export default function Circulation() {
   const qc = useQueryClient();
 
+  // Checkout / Return mode. Return does not need a member step: it keys off
+  // the copy, so it gets its own single-scan flow instead of the two steps.
+  const [mode, setMode] = useState<'checkout' | 'return'>('checkout');
+
   // Step 1: member
   const [memberSearch, setMemberSearch] = useState('');
   const [member, setMember] = useState<User | null>(null);
@@ -38,8 +48,10 @@ export default function Circulation() {
   const [copy, setCopy] = useState<CopyLookup | null>(null);
   const [copyError, setCopyError] = useState('');
 
-  // Quick return
+  // Return
   const [returnAccession, setReturnAccession] = useState('');
+  const [returnResult, setReturnResult] = useState<ReturnResult | null>(null);
+  const [returnError, setReturnError] = useState('');
 
   // Bumped after each processed scan so focus returns to the field.
   const [scanCycle, setScanCycle] = useState(0);
@@ -78,13 +90,13 @@ export default function Circulation() {
   // Scanner focus. A handheld scanner types then presses Enter, so the field
   // has to already hold focus; the cycle counters hand focus back after each
   // scan is processed.
-  // Focus follows the step. On arrival that is the member search, not the
-  // return box: a scan landing in returns would send a book back when the
-  // operator meant to check one out. Returns have their own page.
+  // Focus follows the step (and mode): a scan in checkout mode goes to the
+  // member search first, then the copy field; a scan in return mode always
+  // goes to the return field, since that flow has no member step.
   const canScan = !!member && !!eligibility?.eligible;
-  const memberRef = useScanFocus<HTMLInputElement>(!member, memberCycle);
-  const accessionRef = useScanFocus<HTMLInputElement>(canScan, scanCycle);
-  const returnRef = useScanFocus<HTMLInputElement>(false, returnCycle);
+  const memberRef = useScanFocus<HTMLInputElement>(mode === 'checkout' && !member, memberCycle);
+  const accessionRef = useScanFocus<HTMLInputElement>(mode === 'checkout' && canScan, scanCycle);
+  const returnRef = useScanFocus<HTMLInputElement>(mode === 'return', returnCycle);
 
   const lookupCopy = useMutation({
     mutationFn: async () =>
@@ -125,19 +137,16 @@ export default function Circulation() {
       const c = (await api.get<CopyLookup>('/catalog/copies/lookup', { params: { accessionNumber: returnAccession } })).data;
       return (await api.post('/circulation/return', { copyId: c.id })).data;
     },
-    onSuccess: (r: { loan: { copy: { book: { title: string } } }; fine: { amount: string } | null }) => {
-      setToast({
-        kind: r.fine ? 'error' : 'success',
-        text: r.fine
-          ? `Returned "${r.loan.copy.book.title}", fine ${money(r.fine.amount)}`
-          : `Returned "${r.loan.copy.book.title}" on time`,
-      });
+    onSuccess: (r: ReturnResult) => {
+      setReturnResult(r);
+      setReturnError('');
       setReturnAccession('');
       setReturnCycle((n) => n + 1);
       qc.invalidateQueries({ queryKey: ['recent-activity'] });
     },
     onError: (e) => {
-      setToast({ kind: 'error', text: apiErrorMessage(e) });
+      setReturnError(apiErrorMessage(e));
+      setReturnResult(null);
       setReturnCycle((n) => n + 1);
     },
   });
@@ -147,6 +156,13 @@ export default function Circulation() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
+      if (mode === 'return') {
+        setReturnAccession('');
+        setReturnResult(null);
+        setReturnError('');
+        setReturnCycle((n) => n + 1);
+        return;
+      }
       setCopy(null);
       setAccession('');
       setCopyError('');
@@ -156,33 +172,38 @@ export default function Circulation() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [mode]);
 
   return (
     <div>
       <StaffHeader title="Circulation Console" subtitle="Process loans, returns, and track inventory.">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            quickReturn.mutate();
-          }}
-          className="hidden items-center gap-2 md:flex"
-        >
-          <input
-            ref={returnRef}
-            value={returnAccession}
-            onChange={(e) => setReturnAccession(e.target.value)}
-            placeholder="Scan accession for return"
-            className="w-56 rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-          />
-          <Button variant="secondary" type="submit" disabled={!returnAccession || quickReturn.isPending}>
-            Quick Return
-          </Button>
-        </form>
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
+          <button
+            type="button"
+            onClick={() => setMode('checkout')}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+              mode === 'checkout' ? 'bg-accent text-accent-fg' : 'text-fg-muted hover:text-fg'
+            }`}
+          >
+            <CheckIcon className="h-4 w-4" />
+            Check Out
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('return')}
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+              mode === 'return' ? 'bg-accent text-accent-fg' : 'text-fg-muted hover:text-fg'
+            }`}
+          >
+            <ArrowLeftIcon className="h-4 w-4" />
+            Return
+          </button>
+        </div>
       </StaffHeader>
 
       {toast && <div className="mb-5"><Alert kind={toast.kind}>{toast.text}</Alert></div>}
 
+      {mode === 'checkout' && (
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Step 1: member */}
         <Card>
@@ -325,6 +346,54 @@ export default function Circulation() {
           )}
         </Card>
       </div>
+      )}
+
+      {mode === 'return' && (
+        <Card className="mx-auto max-w-xl">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-accent-fg">
+              <ArrowLeftIcon className="h-4 w-4" />
+            </span>
+            <h2 className="text-lg font-bold text-fg">Process Return</h2>
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (returnAccession.trim() && !quickReturn.isPending) quickReturn.mutate();
+            }}
+          >
+            <input
+              ref={returnRef}
+              value={returnAccession}
+              onChange={(e) => setReturnAccession(e.target.value)}
+              placeholder="Scan accession number or barcode…"
+              className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </form>
+          {returnError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{returnError}</p>}
+
+          {returnResult && (
+            <div className="mt-4">
+              <Alert kind={returnResult.fine ? 'error' : 'success'}>
+                <div className="font-medium">Returned: {returnResult.loan.copy.book.title}</div>
+                {returnResult.fine ? (
+                  <div>
+                    Overdue fine issued: {money(returnResult.fine.amount)} ({returnResult.fine.reason})
+                  </div>
+                ) : (
+                  <div>No fine, returned on time.</div>
+                )}
+                {returnResult.reservationPromoted && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <PinIcon className="h-4 w-4 shrink-0" />
+                    Held for the next member in the reservation queue.
+                  </div>
+                )}
+              </Alert>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Recent activity */}
       <Card className="mt-6 p-0">

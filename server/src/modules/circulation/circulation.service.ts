@@ -1,4 +1,4 @@
-import { CopyStatus, LoanStatus, Prisma } from '@prisma/client';
+import { CopyStatus, LoanStatus, Prisma, ReservationStatus } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { BadRequestError, NotFoundError } from '../../lib/errors.js';
 import { SettingService } from '../setting/setting.service.js';
@@ -47,10 +47,18 @@ export const CirculationService = {
 
       // Resolve the copy: explicit copyId, or first AVAILABLE copy of the book.
       let copy;
+      let fulfilledReservationId: string | null = null;
       if (params.copyId) {
         copy = await tx.bookCopy.findFirst({ where: { id: params.copyId, deletedAt: null } });
         if (!copy) throw new NotFoundError('Copy not found');
-        if (copy.status !== CopyStatus.AVAILABLE) {
+        if (copy.status === CopyStatus.RESERVED) {
+          // Held copies only move if the person collecting is the one it was held for.
+          const hold = await tx.reservation.findFirst({
+            where: { bookId: copy.bookId, userId, status: ReservationStatus.READY },
+          });
+          if (!hold) throw new BadRequestError('Copy is reserved for another member');
+          fulfilledReservationId = hold.id;
+        } else if (copy.status !== CopyStatus.AVAILABLE) {
           throw new BadRequestError(`Copy is not available (status: ${copy.status})`);
         }
       } else if (params.bookId) {
@@ -67,6 +75,13 @@ export const CirculationService = {
         where: { id: copy.id },
         data: { status: CopyStatus.CHECKED_OUT },
       });
+
+      if (fulfilledReservationId) {
+        await tx.reservation.update({
+          where: { id: fulfilledReservationId },
+          data: { status: ReservationStatus.FULFILLED },
+        });
+      }
 
       const checkoutDate = new Date();
       const loan = await tx.loan.create({
