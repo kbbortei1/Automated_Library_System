@@ -27,14 +27,14 @@ function QuickAction({ to, title, desc }: { to: string; title: string; desc: str
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-lg bg-surface/10 px-4 py-3 transition hover:bg-surface/20"
+      className="flex items-center gap-3 rounded-lg bg-accent-fg/10 px-4 py-3 transition hover:bg-accent-fg/20"
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface/15 text-white">
-        <ArrowRightIcon />
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-fg/15 text-accent-fg">
+        <ArrowRightIcon className="h-4 w-4" />
       </span>
-      <span>
-        <span className="block text-sm font-semibold text-white">{title}</span>
-        <span className="block text-xs text-white/60">{desc}</span>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-accent-fg">{title}</span>
+        <span className="block text-xs text-accent-fg/70">{desc}</span>
       </span>
     </Link>
   );
@@ -131,8 +131,8 @@ export default function StaffDashboard() {
             </Card>
 
             <div className="flex flex-col gap-6">
-              <div className="rounded-xl bg-accent-hover p-5 shadow-card">
-                <h2 className="text-lg font-bold text-white">Quick Actions</h2>
+              <div className="rounded-xl bg-accent p-5 shadow-card dark:shadow-none">
+                <h2 className="text-lg font-bold text-accent-fg">Quick Actions</h2>
                 <div className="mt-4 flex flex-col gap-3">
                   <QuickAction to="/staff/circulation" title="Checkout Book" desc="Scan ISBN or enter member ID" />
                   <QuickAction to="/staff/circulation" title="Return Book" desc="Process standard return" />
