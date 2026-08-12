@@ -20,7 +20,9 @@ export default function BookCopies() {
   const qc = useQueryClient();
   const [accessionNumber, setAccession] = useState('');
   const [shelfLocation, setShelf] = useState('');
+  const [quantity, setQuantity] = useState('1');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
 
   const { data: book, isLoading } = useQuery({
     queryKey: ['book', id],
@@ -32,14 +34,30 @@ export default function BookCopies() {
 
   const addCopy = useMutation({
     mutationFn: async () =>
-      (await api.post(`/catalog/books/${id}/copies`, { accessionNumber, shelfLocation })).data,
-    onSuccess: () => {
+      (
+        await api.post<BookCopy[]>(`/catalog/books/${id}/copies`, {
+          accessionNumber,
+          shelfLocation,
+          quantity: Number(quantity) || 1,
+        })
+      ).data,
+    onSuccess: (created) => {
+      const list = Array.isArray(created) ? created : [created];
       setAccession('');
       setShelf('');
+      setQuantity('1');
       setError('');
+      setNotice(
+        list.length === 1
+          ? `Added copy ${list[0].accessionNumber}.`
+          : `Added ${list.length} copies, ${list[0].accessionNumber} to ${list[list.length - 1].accessionNumber}.`,
+      );
       invalidate();
     },
-    onError: (e) => setError(apiErrorMessage(e)),
+    onError: (e) => {
+      setNotice('');
+      setError(apiErrorMessage(e));
+    },
   });
 
   const setStatus = useMutation({
@@ -141,6 +159,7 @@ export default function BookCopies() {
       </div>
 
       {error && <Alert>{error}</Alert>}
+      {notice && <Alert kind="success">{notice}</Alert>}
 
       <Card>
         <h2 className="mb-4 text-lg font-semibold text-fg">Add copy</h2>
@@ -157,8 +176,21 @@ export default function BookCopies() {
             value={shelfLocation}
             onChange={(e) => setShelf(e.target.value)}
           />
-          <Button type="submit" disabled={addCopy.isPending}>
-            Add copy
+          <Input
+            label="How many"
+            type="number"
+            min={1}
+            max={50}
+            className="w-28"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+          <Button type="submit" variant="knust" disabled={addCopy.isPending}>
+            {addCopy.isPending
+              ? 'Adding…'
+              : Number(quantity) > 1
+                ? `Add ${quantity} copies`
+                : 'Add copy'}
           </Button>
         </form>
       </Card>
