@@ -12,23 +12,16 @@ import {
 import { api } from '../../lib/api';
 import { Avatar, Badge, Card, StatCard } from '../../components/ui';
 import { StaffHeader } from '../../components/StaffHeader';
-import { CheckCircleIcon } from '../../components/icons';
+import {
+  AlertTriangleIcon,
+  ArrowRightIcon,
+  BanknoteIcon,
+  BookOpenIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+} from '../../components/icons';
 import { money } from '../../lib/format';
 import type { DashboardStats, Loan, MostBorrowed, Paginated } from '../../types';
-
-const ICONS = {
-  loans: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25',
-  overdue: 'M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0',
-  fines: 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z',
-  reservations: 'M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75',
-};
-function Icon({ d }: { d: string }) {
-  return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d={d} />
-    </svg>
-  );
-}
 
 function QuickAction({ to, title, desc }: { to: string; title: string; desc: string }) {
   return (
@@ -37,7 +30,7 @@ function QuickAction({ to, title, desc }: { to: string; title: string; desc: str
       className="flex items-center gap-3 rounded-lg bg-surface/10 px-4 py-3 transition hover:bg-surface/20"
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface/15 text-white">
-        <Icon d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        <ArrowRightIcon />
       </span>
       <span>
         <span className="block text-sm font-semibold text-white">{title}</span>
@@ -100,24 +93,24 @@ export default function StaffDashboard() {
         <div className="flex flex-col gap-6">
           {/* KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Active Loans" value={stats.activeLoans} icon={<Icon d={ICONS.loans} />} />
+            <StatCard label="Active Loans" value={stats.activeLoans} icon={<BookOpenIcon />} />
             <StatCard
               label="Overdue Loans"
               value={stats.overdueLoans}
               accent="text-red-600 dark:text-red-400"
               hint="Requires action"
-              icon={<Icon d={ICONS.overdue} />}
+              icon={<AlertTriangleIcon />}
             />
             <StatCard
               label="Total Fines"
               value={money(stats.outstandingFines)}
-              icon={<Icon d={ICONS.fines} />}
+              icon={<BanknoteIcon />}
             />
             <StatCard
               label="Pending Reservations"
               value={stats.pendingReservations}
               hint={`${stats.readyReservations} ready for pickup`}
-              icon={<Icon d={ICONS.reservations} />}
+              icon={<CalendarIcon />}
             />
           </div>
 
