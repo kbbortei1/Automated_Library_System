@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../../lib/api';
-import { Badge, Card, Select } from '../../components/ui';
+import { Badge, Select } from '../../components/ui';
+import { DataTable, type Column } from '../../components/DataTable';
 import { StaffHeader } from '../../components/StaffHeader';
+import { ExchangeIcon } from '../../components/icons';
 import { formatDate, isOverdue } from '../../lib/format';
 import type { Loan, LoanStatus, Paginated } from '../../types';
 
@@ -20,6 +22,46 @@ export default function Loans() {
       ).data,
     placeholderData: keepPreviousData,
   });
+
+  const columns: Column<Loan>[] = [
+    {
+      header: 'Book',
+      primary: true,
+      className: 'font-medium text-fg',
+      cell: (l) => l.copy.book.title,
+    },
+    { header: 'Member', cell: (l) => l.user.fullName },
+    { header: 'Accession', cell: (l) => l.copy.accessionNumber },
+    {
+      header: 'Due',
+      className: 'text-fg-muted',
+      cell: (l) => (
+        <span
+          className={
+            isOverdue(l.dueDate, l.status) ? 'font-semibold text-red-600 dark:text-red-400' : ''
+          }
+        >
+          {formatDate(l.dueDate)}
+        </span>
+      ),
+    },
+    { header: 'Returned', cell: (l) => formatDate(l.returnDate) },
+    {
+      header: 'Status',
+      cell: (l) => {
+        const overdue = isOverdue(l.dueDate, l.status);
+        return (
+          <Badge
+            tone={
+              l.status === 'RETURNED' ? 'gray' : overdue || l.status === 'OVERDUE' ? 'red' : 'green'
+            }
+          >
+            {overdue && l.status === 'ACTIVE' ? 'OVERDUE' : l.status}
+          </Badge>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -41,62 +83,27 @@ export default function Loans() {
         </Select>
       </div>
 
-      <Card className="overflow-x-auto p-0">
-        {isLoading ? (
-          <p className="p-6 text-fg-muted">Loading…</p>
-        ) : !data?.items.length ? (
-          <p className="p-6 text-fg-muted">No loans found.</p>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-surface-2 text-fg-muted">
-              <tr>
-                <th className="px-4 py-3 font-medium">Book</th>
-                <th className="px-4 py-3 font-medium">Member</th>
-                <th className="px-4 py-3 font-medium">Accession</th>
-                <th className="px-4 py-3 font-medium">Due</th>
-                <th className="px-4 py-3 font-medium">Returned</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((l) => {
-                const overdue = isOverdue(l.dueDate, l.status);
-                return (
-                  <tr key={l.id} className="border-b border-border-subtle">
-                    <td className="px-4 py-3 font-medium text-fg">{l.copy.book.title}</td>
-                    <td className="px-4 py-3 text-fg-muted">{l.user.fullName}</td>
-                    <td className="px-4 py-3 text-fg-muted">{l.copy.accessionNumber}</td>
-                    <td className={`px-4 py-3 ${overdue ? 'font-semibold text-red-600 dark:text-red-400' : 'text-fg-muted'}`}>
-                      {formatDate(l.dueDate)}
-                    </td>
-                    <td className="px-4 py-3 text-fg-muted">{formatDate(l.returnDate)}</td>
-                    <td className="px-4 py-3">
-                      <Badge
-                        tone={
-                          l.status === 'RETURNED'
-                            ? 'gray'
-                            : overdue || l.status === 'OVERDUE'
-                              ? 'red'
-                              : 'green'
-                        }
-                      >
-                        {overdue && l.status === 'ACTIVE' ? 'OVERDUE' : l.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </Card>
+      <DataTable
+        columns={columns}
+        rows={data?.items}
+        keyOf={(l) => l.id}
+        isLoading={isLoading}
+        skeletonRows={6}
+        emptyIcon={<ExchangeIcon />}
+        emptyTitle={status ? `No ${status.toLowerCase()} loans` : 'No loans yet'}
+        emptyBody={
+          status
+            ? 'Try a different status filter.'
+            : 'Loans appear here once books are checked out at the desk.'
+        }
+      />
 
       {data && data.totalPages > 1 && (
         <div className="flex items-center justify-center gap-4">
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-40"
+            className="rounded-lg border border-border px-3 py-1.5 text-sm text-fg-muted transition hover:bg-surface-2 disabled:opacity-40"
           >
             Previous
           </button>
@@ -106,7 +113,7 @@ export default function Loans() {
           <button
             disabled={page >= data.totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-40"
+            className="rounded-lg border border-border px-3 py-1.5 text-sm text-fg-muted transition hover:bg-surface-2 disabled:opacity-40"
           >
             Next
           </button>
