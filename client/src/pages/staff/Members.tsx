@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
+import { useAuth } from '../../lib/auth';
 import { Alert, Badge, Button, Input } from '../../components/ui';
 import { DataTable, type Column } from '../../components/DataTable';
 import { StaffHeader } from '../../components/StaffHeader';
@@ -9,6 +10,7 @@ import type { Paginated, User } from '../../types';
 
 export default function Members() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -33,6 +35,19 @@ export default function Members() {
     },
   });
 
+  // Mirrors canAdminister on the server: never offer an action that would be
+  // refused. The server is the actual guard; this just stops staff from
+  // clicking a button that cannot work.
+  const RANK = { MEMBER: 1, LIBRARIAN: 2, ADMIN: 3 } as const;
+  const canAdminister = (target: User) => {
+    if (!user || user.id === target.id) return false;
+    const mine = RANK[user.role as keyof typeof RANK] ?? 0;
+    const theirs = RANK[target.role as keyof typeof RANK] ?? 0;
+    if (theirs > mine) return false;
+    if (theirs === mine && user.role !== 'ADMIN') return false;
+    return true;
+  };
+
   const columns: Column<User>[] = [
     { header: 'Name', primary: true, className: 'font-medium text-fg', cell: (m) => m.fullName },
     { header: 'Email', cell: (m) => m.email },
@@ -45,7 +60,10 @@ export default function Members() {
     {
       header: 'Action',
       action: true,
-      cell: (m) => (
+      cell: (m) =>
+        !canAdminister(m) ? (
+          <span className="text-xs text-fg-subtle">-</span>
+        ) : (
         <Button
           variant={m.status === 'ACTIVE' ? 'danger' : 'secondary'}
           className="px-3 py-1.5 text-xs"
@@ -59,7 +77,7 @@ export default function Members() {
         >
           {m.status === 'ACTIVE' ? 'Suspend' : 'Reactivate'}
         </Button>
-      ),
+        ),
     },
   ];
 
