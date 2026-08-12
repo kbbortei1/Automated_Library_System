@@ -78,12 +78,18 @@ export function DataTable<T>({
                   <span className="min-w-0 font-medium text-fg">{primary.cell(row)}</span>
                 </div>
               )}
+              {/* auto/1fr rather than an even split: labels are short and
+                  values like an email need the remaining width, with
+                  break-words so a long unbroken address cannot push the card
+                  wider than the viewport. */}
               {details.length > 0 && (
-                <dl className="grid grid-cols-2 gap-y-1 text-xs">
+                <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                   {details.map((c) => (
                     <div key={c.header} className="contents">
                       <dt className="text-fg-subtle">{c.header}</dt>
-                      <dd className="text-right text-fg-muted">{c.cell(row)}</dd>
+                      <dd className="min-w-0 break-words text-right text-fg-muted">
+                        {c.cell(row)}
+                      </dd>
                     </div>
                   ))}
                 </dl>
