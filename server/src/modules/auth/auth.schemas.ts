@@ -12,7 +12,20 @@ export const registerSchema = z.object({
     .optional()
     .transform((v) => (v ? v.trim() : undefined)),
   password: z.string().min(8, 'Password must be at least 8 characters').max(128),
-  phone: z.string().max(40).optional(),
+  // Required so overdue reminders and fine notices can actually reach the
+  // member. Ghana's Data Protection Act asks that a required field states its
+  // purpose, which the registration form does next to this input.
+  phone: z
+    .string()
+    .trim()
+    .min(9, 'A phone number is required so we can reach you about due dates and fines')
+    .max(20)
+    .regex(
+      // Ghana local (0XXXXXXXXX) or international (+233XXXXXXXXX), spaces and
+      // dashes tolerated because people type numbers the way they say them.
+      /^(\+?\d{1,4}[\s-]?)?\d[\d\s-]{7,}$/,
+      'Enter a valid phone number, for example 024 123 4567 or +233 24 123 4567',
+    ),
   membershipType: z.nativeEnum(MembershipType).optional(),
 });
 

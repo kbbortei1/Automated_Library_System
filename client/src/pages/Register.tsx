@@ -43,6 +43,10 @@ export default function Register() {
       setError('Password must be at least 8 characters');
       return;
     }
+    if (!form.phone.trim()) {
+      setError('A phone number is required so the library can reach you about due dates and fines');
+      return;
+    }
     setSubmitting(true);
     try {
       await register({
@@ -50,7 +54,7 @@ export default function Register() {
         email: form.email,
         identifier: form.identifier || undefined,
         password: form.password,
-        phone: form.phone || undefined,
+        phone: form.phone.trim(),
         membershipType: form.membershipType,
       });
       navigate('/', { replace: true });
@@ -123,12 +127,21 @@ export default function Register() {
             value={form.password}
             onChange={update('password')}
           />
-          <Input
-            label="Phone (optional)"
-            value={form.phone}
-            onChange={update('phone')}
-            placeholder="0XX XXX XXXX"
-          />
+          <div>
+            <Input
+              label="Phone"
+              type="tel"
+              required
+              value={form.phone}
+              onChange={update('phone')}
+              placeholder="024 123 4567"
+            />
+            {/* Ghana's Data Protection Act asks that a required field says why
+                it is needed, not just that it is mandatory. */}
+            <p className="mt-1 text-xs leading-relaxed text-fg-subtle">
+              Used for due-date reminders and fine notices.
+            </p>
+          </div>
         </div>
 
         <Button type="submit" variant="knust" disabled={submitting} className="w-full py-2.5">
