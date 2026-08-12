@@ -16,7 +16,6 @@ import Members from './pages/staff/Members';
 import Books from './pages/staff/Books';
 import BookCopies from './pages/staff/BookCopies';
 import Checkout from './pages/staff/Checkout';
-import Returns from './pages/staff/Returns';
 import Loans from './pages/staff/Loans';
 import Circulation from './pages/staff/Circulation';
 import ReservationQueue from './pages/staff/ReservationQueue';
@@ -52,7 +51,6 @@ export default function App() {
             <Route path="/staff/books/:id/copies" element={<BookCopies />} />
             <Route path="/staff/circulation" element={<Circulation />} />
             <Route path="/staff/checkout" element={<Checkout />} />
-            <Route path="/staff/returns" element={<Returns />} />
             <Route path="/staff/loans" element={<Loans />} />
             <Route path="/staff/members" element={<Members />} />
             <Route path="/staff/reservations" element={<ReservationQueue />} />
