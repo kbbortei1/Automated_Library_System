@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Button, Card, Input } from '../../components/ui';
+import { DataTable, type Column } from '../../components/DataTable';
 import { StaffHeader } from '../../components/StaffHeader';
 import { BookForm } from '../../components/BookForm';
+import { BookOpenIcon } from '../../components/icons';
 import type { Book, Paginated } from '../../types';
 
 export default function Books() {
@@ -64,10 +66,48 @@ export default function Books() {
     );
   }
 
+  const rowAction =
+    'rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted transition hover:bg-surface-2 hover:text-fg';
+
+  const columns: Column<Book>[] = [
+    { header: 'Title', primary: true, className: 'font-medium text-fg', cell: (b) => b.title },
+    { header: 'Authors', cell: (b) => b.authors.map((a) => a.name).join(', ') },
+    { header: 'ISBN', cell: (b) => b.isbn },
+    {
+      header: 'Available',
+      className: 'font-medium text-fg',
+      cell: (b) => `${b.availableCopies}/${b.totalCopies}`,
+    },
+    {
+      header: 'Actions',
+      action: true,
+      cell: (b) => (
+        <div className="flex gap-2">
+          <Link to={`/staff/books/${b.id}/copies`} className={rowAction}>
+            Copies
+          </Link>
+          <button onClick={() => setEditing(b)} className={rowAction}>
+            Edit
+          </button>
+          <button
+            onClick={() => {
+              if (confirm(`Delete "${b.title}"?`)) remove.mutate(b.id);
+            }}
+            className="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
+          >
+            Delete
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <StaffHeader title="Catalogue" subtitle="Manage titles, copies, and inventory.">
-        <Button onClick={() => setCreating(true)}>+ Add book</Button>
+        <Button variant="knust" onClick={() => setCreating(true)}>
+          Add book
+        </Button>
       </StaffHeader>
 
       <div className="max-w-sm">
@@ -78,66 +118,27 @@ export default function Books() {
         />
       </div>
 
-      <Card className="overflow-x-auto p-0">
-        {isLoading ? (
-          <p className="p-6 text-fg-muted">Loading…</p>
-        ) : !data?.items.length ? (
-          <p className="p-6 text-fg-muted">No books found.</p>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-surface-2 text-fg-muted">
-              <tr>
-                <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Authors</th>
-                <th className="px-4 py-3 font-medium">ISBN</th>
-                <th className="px-4 py-3 font-medium">Available</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((b) => (
-                <tr key={b.id} className="border-b border-border-subtle">
-                  <td className="px-4 py-3 font-medium text-fg">{b.title}</td>
-                  <td className="px-4 py-3 text-fg-muted">
-                    {b.authors.map((a) => a.name).join(', ')}
-                  </td>
-                  <td className="px-4 py-3 text-fg-muted">{b.isbn}</td>
-                  <td className="px-4 py-3">
-                    <span className="font-medium text-fg">
-                      {b.availableCopies}/{b.totalCopies}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      <Link
-                        to={`/staff/books/${b.id}/copies`}
-                        className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-2"
-                      >
-                        Copies
-                      </Link>
-                      <button
-                        onClick={() => setEditing(b)}
-                        className="rounded-md border border-border px-2 py-1 text-xs font-medium text-fg-muted hover:bg-surface-2"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (confirm(`Delete "${b.title}"?`)) remove.mutate(b.id);
-                        }}
-                        className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        {remove.isError && <Alert>{apiErrorMessage(remove.error)}</Alert>}
-      </Card>
+      <DataTable
+        columns={columns}
+        rows={data?.items}
+        keyOf={(b) => b.id}
+        isLoading={isLoading}
+        skeletonRows={6}
+        emptyIcon={<BookOpenIcon />}
+        emptyTitle={search ? 'No titles match that search' : 'No books in the catalogue'}
+        emptyBody={
+          search ? 'Try a different title, author or ISBN.' : 'Add the first title to get started.'
+        }
+        emptyAction={
+          !search ? (
+            <Button variant="knust" onClick={() => setCreating(true)}>
+              Add book
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {remove.isError && <Alert>{apiErrorMessage(remove.error)}</Alert>}
     </div>
   );
 }
