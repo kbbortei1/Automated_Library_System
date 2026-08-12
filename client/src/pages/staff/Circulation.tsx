@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Avatar, Badge, Button, Card } from '../../components/ui';
@@ -34,10 +34,17 @@ function StepBadge({ n }: { n: number }) {
 
 export default function Circulation() {
   const qc = useQueryClient();
-
-  // Checkout / Return mode. Return does not need a member step: it keys off
-  // the copy, so it gets its own single-scan flow instead of the two steps.
-  const [mode, setMode] = useState<'checkout' | 'return'>('checkout');
+  // Checking out and taking a book back are the same job at the same desk
+  // with the same scanner, so they are modes here rather than separate
+  // screens. Return needs no member step: it keys off the copy, so it gets a
+  // single-scan flow instead of the two. The mode lives in the URL so the
+  // dashboard can link straight to returns and a bookmark still lands where
+  // it used to.
+  const [params, setParams] = useSearchParams();
+  const mode: 'checkout' | 'return' = params.get('mode') === 'return' ? 'return' : 'checkout';
+  const setMode = (m: 'checkout' | 'return') => {
+    setParams(m === 'return' ? { mode: 'return' } : {}, { replace: true });
+  };
 
   // Step 1: member
   const [memberSearch, setMemberSearch] = useState('');
@@ -89,10 +96,11 @@ export default function Circulation() {
 
   // Scanner focus. A handheld scanner types then presses Enter, so the field
   // has to already hold focus; the cycle counters hand focus back after each
-  // scan is processed.
-  // Focus follows the step (and mode): a scan in checkout mode goes to the
-  // member search first, then the copy field; a scan in return mode always
-  // goes to the return field, since that flow has no member step.
+  // scan is processed. Focus follows the step and the mode: a scan in checkout
+  // mode goes to the member search first, then the copy field; a scan in
+  // return mode always goes to the return field, since that flow has no
+  // member step. The mode guards matter, without them a selected member would
+  // pull focus onto the checkout field while the desk is processing returns.
   const canScan = !!member && !!eligibility?.eligible;
   const memberRef = useScanFocus<HTMLInputElement>(mode === 'checkout' && !member, memberCycle);
   const accessionRef = useScanFocus<HTMLInputElement>(mode === 'checkout' && canScan, scanCycle);
@@ -140,11 +148,14 @@ export default function Circulation() {
     onSuccess: (r: ReturnResult) => {
       setReturnResult(r);
       setReturnError('');
+      setToast(null);
       setReturnAccession('');
       setReturnCycle((n) => n + 1);
       qc.invalidateQueries({ queryKey: ['recent-activity'] });
     },
     onError: (e) => {
+      // Inline, next to the field being scanned, the same way a failed copy
+      // lookup reports itself in checkout mode.
       setReturnError(apiErrorMessage(e));
       setReturnResult(null);
       setReturnCycle((n) => n + 1);
@@ -176,28 +187,25 @@ export default function Circulation() {
 
   return (
     <div>
-      <StaffHeader title="Circulation Console" subtitle="Process loans, returns, and track inventory.">
-        <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
-          <button
-            type="button"
-            onClick={() => setMode('checkout')}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition ${
-              mode === 'checkout' ? 'bg-accent text-accent-fg' : 'text-fg-muted hover:text-fg'
-            }`}
-          >
-            <CheckIcon className="h-4 w-4" />
-            Check Out
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('return')}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition ${
-              mode === 'return' ? 'bg-accent text-accent-fg' : 'text-fg-muted hover:text-fg'
-            }`}
-          >
-            <ArrowLeftIcon className="h-4 w-4" />
-            Return
-          </button>
+      <StaffHeader
+        title="Circulation Console"
+        subtitle="Check books out and take them back at the desk."
+      >
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-1">
+          {(['checkout', 'return'] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              aria-pressed={mode === m}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+                mode === m ? 'bg-accent text-accent-fg shadow-sm' : 'text-fg-muted hover:text-fg'
+              }`}
+            >
+              {m === 'checkout' ? <CheckIcon className="h-4 w-4" /> : <ArrowLeftIcon className="h-4 w-4" />}
+              {m === 'checkout' ? 'Check out' : 'Return'}
+            </button>
+          ))}
         </div>
       </StaffHeader>
 
@@ -356,6 +364,9 @@ export default function Circulation() {
             </span>
             <h2 className="text-lg font-bold text-fg">Process Return</h2>
           </div>
+          <p className="mb-4 -mt-2 text-sm text-fg-muted">
+            No member lookup needed, the accession number identifies the loan.
+          </p>
           <form
             onSubmit={(e) => {
               e.preventDefault();

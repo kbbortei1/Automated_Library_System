@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import { Badge, Card, Skeleton } from '../components/ui';
 import {
   AlertTriangleIcon,
+  BellIcon,
   BookmarkIcon,
   BookOpenIcon,
   CheckCircleIcon,
@@ -179,7 +180,11 @@ function MemberDashboard() {
     (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
   );
 
-  const needsAttention = overdue.length > 0 || ready.length > 0 || outstanding > 0;
+  // Existing members registered before a phone number was required, so they
+  // are asked for one rather than being locked out of their own account.
+  const missingPhone = !user?.phone;
+  const needsAttention =
+    overdue.length > 0 || ready.length > 0 || outstanding > 0 || missingPhone;
 
   return (
     <div className="flex flex-col gap-6">
@@ -216,6 +221,15 @@ function MemberDashboard() {
               }.`}
               to="/my-reservations"
               cta="View reservations"
+            />
+          )}
+          {missingPhone && (
+            <ActionRow
+              tone="warn"
+              icon={<BellIcon />}
+              text="Add a phone number so we can reach you about due dates and fines."
+              to="/profile"
+              cta="Add number"
             />
           )}
           {outstanding > 0 && (

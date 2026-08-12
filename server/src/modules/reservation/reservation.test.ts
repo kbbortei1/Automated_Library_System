@@ -29,6 +29,7 @@ describe('reservations (FIFO + promote-on-return)', () => {
       fullName: 'Queue Member',
       email: secondEmail,
       password: 'password123',
+      phone: '024 555 6666',
     });
     secondToken = await login(secondEmail, 'password123');
     secondMemberId = (await prisma.user.findUniqueOrThrow({ where: { email: secondEmail } })).id;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { FineStatus, Role } from '@prisma/client';
 import { z } from 'zod';
+import { AuditAction, AuditService } from '../audit/audit.service.js';
 import { FineService } from './fine.service.js';
 import { requireAuth, requireRole } from '../../middleware/auth.js';
 import { validateQuery } from '../../middleware/validate.js';
@@ -44,10 +45,31 @@ fineRouter.get(
 fineRouter.post(
   '/:id/pay',
   ...staff,
-  asyncHandler(async (req, res) => res.json(await FineService.payFine(req.params.id))),
+  asyncHandler(async (req, res) => {
+    const fine = await FineService.payFine(req.params.id);
+    await AuditService.record({
+      actorId: req.user?.sub,
+      action: AuditAction.FINE_PAID,
+      entity: 'Fine',
+      entityId: fine.id,
+      metadata: { memberId: fine.userId, amount: Number(fine.amount) },
+    });
+    res.json(fine);
+  }),
 );
 fineRouter.post(
   '/:id/waive',
   ...staff,
-  asyncHandler(async (req, res) => res.json(await FineService.waiveFine(req.params.id))),
+  asyncHandler(async (req, res) => {
+    const fine = await FineService.waiveFine(req.params.id);
+    // The one that mattered most: money written off with no record of who.
+    await AuditService.record({
+      actorId: req.user?.sub,
+      action: AuditAction.FINE_WAIVED,
+      entity: 'Fine',
+      entityId: fine.id,
+      metadata: { memberId: fine.userId, amount: Number(fine.amount) },
+    });
+    res.json(fine);
+  }),
 );
