@@ -5,6 +5,7 @@ import { Avatar } from './ui';
 import { KnustCrest } from './KnustCrest';
 import { ThemeToggle } from './ThemeToggle';
 import { NotificationBell } from './NotificationBell';
+import { CommandPalette } from './CommandPalette';
 import {
   AlertTriangleIcon,
   BanknoteIcon,
@@ -127,6 +128,7 @@ export function StaffLayout() {
 
   return (
     <div className="min-h-screen bg-bg">
+      <CommandPalette />
       {/* Mobile top bar */}
       <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 lg:hidden">
         <div className="flex items-center gap-2">
