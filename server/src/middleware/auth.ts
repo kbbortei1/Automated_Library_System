@@ -19,6 +19,30 @@ const ROLE_RANK: Record<Role, number> = {
   [Role.ADMIN]: 3,
 };
 
+/**
+ * Whether an actor may administer a target account.
+ *
+ * requireRole only gates the endpoint, it says nothing about who the target
+ * is, so a librarian could suspend an administrator. Privileged accounts have
+ * to be protected from the tier below them:
+ *
+ *  - never act on someone outranking you
+ *  - never act on a peer unless you are an admin (librarians cannot suspend
+ *    each other)
+ *  - never act on yourself, which would otherwise allow self-lockout
+ */
+export function canAdminister(
+  actor: { id: string; role: Role },
+  target: { id: string; role: Role },
+): boolean {
+  if (actor.id === target.id) return false;
+  const actorRank = ROLE_RANK[actor.role];
+  const targetRank = ROLE_RANK[target.role];
+  if (targetRank > actorRank) return false;
+  if (targetRank === actorRank && actor.role !== Role.ADMIN) return false;
+  return true;
+}
+
 export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {

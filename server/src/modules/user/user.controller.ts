@@ -20,11 +20,21 @@ export const UserController = {
   },
 
   async setStatus(req: Request, res: Response) {
-    res.json(await UserService.setStatus(req.params.id, req.body.status));
+    res.json(
+      await UserService.setStatus(req.params.id, req.body.status, {
+        id: req.user!.sub,
+        role: req.user!.role,
+      }),
+    );
   },
 
   async setRole(req: Request, res: Response) {
-    res.json(await UserService.setRole(req.params.id, req.body.role));
+    res.json(
+      await UserService.setRole(req.params.id, req.body.role, {
+        id: req.user!.sub,
+        role: req.user!.role,
+      }),
+    );
   },
 
   async setMembership(req: Request, res: Response) {

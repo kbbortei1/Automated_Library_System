@@ -1,6 +1,12 @@
 import { MembershipType, Prisma, Role, UserStatus } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
-import { NotFoundError, BadRequestError, UnauthorizedError } from '../../lib/errors.js';
+import {
+  NotFoundError,
+  BadRequestError,
+  ForbiddenError,
+  UnauthorizedError,
+} from '../../lib/errors.js';
+import { canAdminister } from '../../middleware/auth.js';
 import { hashPassword, verifyPassword } from '../../lib/password.js';
 import { SettingService } from '../setting/setting.service.js';
 import { NotificationService } from '../notification/notification.service.js';
@@ -107,9 +113,12 @@ export const UserService = {
     return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
   },
 
-  async setStatus(userId: string, status: UserStatus) {
+  async setStatus(userId: string, status: UserStatus, actor: { id: string; role: Role }) {
     const user = await prisma.user.findFirst({ where: { id: userId, deletedAt: null } });
     if (!user) throw new NotFoundError('User not found');
+    if (!canAdminister(actor, user)) {
+      throw new ForbiddenError('You cannot change the status of this account');
+    }
     const updated = await prisma.user.update({
       where: { id: userId },
       data: { status },
@@ -121,9 +130,12 @@ export const UserService = {
     return updated;
   },
 
-  async setRole(userId: string, role: Role) {
+  async setRole(userId: string, role: Role, actor: { id: string; role: Role }) {
     const user = await prisma.user.findFirst({ where: { id: userId, deletedAt: null } });
     if (!user) throw new NotFoundError('User not found');
+    if (!canAdminister(actor, user)) {
+      throw new ForbiddenError('You cannot change the role of this account');
+    }
     return prisma.user.update({
       where: { id: userId },
       data: { role },
