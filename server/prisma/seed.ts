@@ -36,6 +36,7 @@ async function main() {
   console.log(`✅ Seeded ${DEFAULT_SETTINGS.length} settings`);
 
   await seedUsers();
+  await seedCategories();
   await seedCatalog();
 }
 
@@ -102,6 +103,54 @@ const SEED_BOOKS: SeedBook[] = [
     copies: 5,
   },
 ];
+
+/**
+ * Subject areas for a science and technology university library.
+ *
+ * Categories used to exist only as a by-product of seeding books, so a fresh
+ * database offered three of them and every new title had to invent its own.
+ * Seeding the taxonomy separately gives the catalogue form something real to
+ * choose from on day one.
+ */
+const SEED_CATEGORIES = [
+  'Computer Science',
+  'Software Engineering',
+  'Information Technology',
+  'Electrical & Electronic Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Chemical Engineering',
+  'Materials Science',
+  'Architecture & Planning',
+  'Agriculture & Natural Resources',
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biological Sciences',
+  'Medicine & Health Sciences',
+  'Pharmacy',
+  'Business & Management',
+  'Economics',
+  'Law',
+  'Social Sciences',
+  'Education',
+  'African Studies',
+  'History',
+  'Literature',
+  'Fiction',
+  'Reference',
+];
+
+async function seedCategories() {
+  let created = 0;
+  for (const name of SEED_CATEGORIES) {
+    const existing = await prisma.category.findUnique({ where: { name } });
+    if (existing) continue;
+    await prisma.category.create({ data: { name } });
+    created += 1;
+  }
+  console.log(`Categories: ${created} created, ${SEED_CATEGORIES.length - created} already present`);
+}
 
 async function seedCatalog() {
   let created = 0;
