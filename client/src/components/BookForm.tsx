@@ -52,6 +52,54 @@ export function BookForm({
 }) {
   const [v, setV] = useState<BookFormValues>(toFormValues(book));
   const [addingCategory, setAddingCategory] = useState(false);
+  const [lookup, setLookup] = useState<{ state: 'idle' | 'busy' | 'ok' | 'fail'; msg: string }>({
+    state: 'idle',
+    msg: '',
+  });
+
+  /**
+   * Fill the form from Open Library using the ISBN.
+   *
+   * Cataloguing a title by hand means typing eight fields that are already
+   * published data. Only the year is stored, so the publish date is reduced
+   * to its four-digit year. Category is deliberately left alone: Open
+   * Library's subjects do not map onto a library's own shelving scheme.
+   */
+  async function lookupIsbn() {
+    const isbn = v.isbn.replace(/[^0-9Xx]/g, '');
+    if (!isbn) {
+      setLookup({ state: 'fail', msg: 'Enter an ISBN first.' });
+      return;
+    }
+    setLookup({ state: 'busy', msg: '' });
+    try {
+      const res = await fetch(
+        `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`,
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const body = await res.json();
+      const rec = body[`ISBN:${isbn}`];
+      if (!rec) {
+        setLookup({ state: 'fail', msg: 'No record found for that ISBN. Enter the details by hand.' });
+        return;
+      }
+      const year = String(rec.publish_date ?? '').match(/\d{4}/)?.[0] ?? '';
+      setV((prev) => ({
+        ...prev,
+        title: [rec.title, rec.subtitle].filter(Boolean).join(': ') || prev.title,
+        authors: (rec.authors ?? []).map((a: { name: string }) => a.name).join(', ') || prev.authors,
+        publisher: (rec.publishers ?? [])[0]?.name ?? prev.publisher,
+        publicationYear: year || prev.publicationYear,
+        coverImageUrl: prev.coverImageUrl,
+      }));
+      setLookup({ state: 'ok', msg: `Filled from Open Library. Check the details, then pick a category.` });
+    } catch {
+      setLookup({
+        state: 'fail',
+        msg: 'Could not reach Open Library. Enter the details by hand.',
+      });
+    }
+  }
 
   const { data: categories } = useQuery({
     queryKey: ['categories'],
@@ -83,7 +131,38 @@ export function BookForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && <Alert>{error}</Alert>}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="ISBN" required value={v.isbn} onChange={set('isbn')} />
+        <div>
+          <div className="flex items-end gap-2">
+            <Input
+              label="ISBN"
+              required
+              className="flex-1"
+              value={v.isbn}
+              onChange={(e) => {
+                set('isbn')(e);
+                setLookup({ state: 'idle', msg: '' });
+              }}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              className="shrink-0"
+              disabled={lookup.state === 'busy'}
+              onClick={lookupIsbn}
+            >
+              {lookup.state === 'busy' ? 'Looking up…' : 'Look up'}
+            </Button>
+          </div>
+          {lookup.msg && (
+            <p
+              className={`mt-1 text-xs ${
+                lookup.state === 'fail' ? 'text-red-600 dark:text-red-400' : 'text-accent'
+              }`}
+            >
+              {lookup.msg}
+            </p>
+          )}
+        </div>
         <Select
           label="Publication year"
           required
