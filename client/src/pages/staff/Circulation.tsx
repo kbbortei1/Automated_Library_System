@@ -44,6 +44,7 @@ export default function Circulation() {
   // Bumped after each processed scan so focus returns to the field.
   const [scanCycle, setScanCycle] = useState(0);
   const [returnCycle, setReturnCycle] = useState(0);
+  const [memberCycle, setMemberCycle] = useState(0);
 
   const [toast, setToast] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
 
@@ -77,9 +78,13 @@ export default function Circulation() {
   // Scanner focus. A handheld scanner types then presses Enter, so the field
   // has to already hold focus; the cycle counters hand focus back after each
   // scan is processed.
+  // Focus follows the step. On arrival that is the member search, not the
+  // return box: a scan landing in returns would send a book back when the
+  // operator meant to check one out. Returns have their own page.
   const canScan = !!member && !!eligibility?.eligible;
+  const memberRef = useScanFocus<HTMLInputElement>(!member, memberCycle);
   const accessionRef = useScanFocus<HTMLInputElement>(canScan, scanCycle);
-  const returnRef = useScanFocus<HTMLInputElement>(!member, returnCycle);
+  const returnRef = useScanFocus<HTMLInputElement>(false, returnCycle);
 
   const lookupCopy = useMutation({
     mutationFn: async () =>
@@ -147,6 +152,7 @@ export default function Circulation() {
       setCopyError('');
       setMember(null);
       setMemberSearch('');
+      setMemberCycle((n) => n + 1);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -185,6 +191,7 @@ export default function Circulation() {
             <h2 className="text-lg font-bold text-fg">Identify Member</h2>
           </div>
           <input
+            ref={memberRef}
             value={memberSearch}
             onChange={(e) => {
               setMemberSearch(e.target.value);
