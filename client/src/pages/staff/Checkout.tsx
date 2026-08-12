@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Button, Card, Input } from '../../components/ui';
 import { StaffHeader } from '../../components/StaffHeader';
+import { CheckCircleIcon, XCircleIcon } from '../../components/icons';
 import type { Eligibility, Paginated, User } from '../../types';
 
 export default function Checkout() {
@@ -35,7 +36,7 @@ export default function Checkout() {
     },
     onSuccess: (loan: { copy: { book: { title: string } }; dueDate: string }) => {
       setResult(
-        `✓ Checked out "${loan.copy.book.title}", due ${new Date(loan.dueDate).toLocaleDateString()}`,
+        `Checked out "${loan.copy.book.title}", due ${new Date(loan.dueDate).toLocaleDateString()}`,
       );
       setAccession('');
       setError('');
@@ -93,9 +94,15 @@ export default function Checkout() {
             </div>
             {eligibility &&
               (eligibility.eligible ? (
-                <p className="mt-1 text-green-700">✓ Eligible to borrow</p>
+                <p className="mt-1 flex items-center gap-1.5 text-green-700 dark:text-emerald-400">
+                  <CheckCircleIcon className="h-4 w-4" />
+                  Eligible to borrow
+                </p>
               ) : (
-                <p className="mt-1 text-red-600 dark:text-red-400">✗ {eligibility.reasons.join('; ')}</p>
+                <p className="mt-1 flex items-start gap-1.5 text-red-600 dark:text-red-400">
+                  <XCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{eligibility.reasons.join('; ')}</span>
+                </p>
               ))}
           </div>
         )}
