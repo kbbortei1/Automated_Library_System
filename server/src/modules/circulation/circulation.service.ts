@@ -154,15 +154,21 @@ export const CirculationService = {
         throw new BadRequestError('Loan already returned');
       }
 
-      const maxRenewals = await SettingService.getNumber('max_renewals');
+      const user = await tx.user.findUniqueOrThrow({ where: { id: loan.userId } });
+
+      // A faculty member and an undergraduate do not get the same allowance,
+      // so the per-type limit wins where one is configured and the global
+      // max_renewals is the fallback.
+      const perType = await SettingService.getNumberOptional(
+        `max_renewals_${user.membershipType.toLowerCase()}`,
+      );
+      const maxRenewals = perType ?? (await SettingService.getNumber('max_renewals'));
       if (loan.renewalCount >= maxRenewals) {
         throw new BadRequestError(`Maximum renewals (${maxRenewals}) reached`);
       }
 
       // Guard: cannot renew if others are waiting for this title (set in Phase 5).
       await assertNoBlockingReservation(loan.copy.bookId, tx);
-
-      const user = await tx.user.findUniqueOrThrow({ where: { id: loan.userId } });
       const updated = await tx.loan.update({
         where: { id: loanId },
         data: {

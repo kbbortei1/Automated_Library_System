@@ -20,6 +20,19 @@ export const SettingService = {
     return n;
   },
 
+  /**
+   * Numeric setting, or null when the key is absent.
+   *
+   * Used where a specific key overrides a general one, so a missing override
+   * is an ordinary outcome rather than an error.
+   */
+  async getNumberOptional(key: string): Promise<number | null> {
+    const setting = await prisma.setting.findUnique({ where: { key } });
+    if (!setting) return null;
+    const n = Number(setting.value);
+    return Number.isNaN(n) ? null : n;
+  },
+
   async update(key: string, value: string) {
     return prisma.setting.update({ where: { key }, data: { value } });
   },

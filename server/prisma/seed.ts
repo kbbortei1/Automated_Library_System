@@ -7,7 +7,22 @@ const prisma = new PrismaClient();
 const DEFAULT_SETTINGS: { key: string; value: string; description: string }[] = [
   { key: 'default_loan_period_days', value: '14', description: 'Default loan period in days' },
   { key: 'fine_rate_per_day', value: '0.50', description: 'Fine charged per overdue day' },
-  { key: 'max_renewals', value: '2', description: 'Maximum renewals per loan' },
+  { key: 'max_renewals', value: '2', description: 'Maximum renewals per loan (fallback)' },
+  {
+    key: 'max_renewals_student',
+    value: '2',
+    description: 'Maximum renewals per loan for students',
+  },
+  {
+    key: 'max_renewals_faculty',
+    value: '4',
+    description: 'Maximum renewals per loan for faculty',
+  },
+  {
+    key: 'max_renewals_public',
+    value: '1',
+    description: 'Maximum renewals per loan for public members',
+  },
   {
     key: 'reservation_ready_window_hours',
     value: '48',
