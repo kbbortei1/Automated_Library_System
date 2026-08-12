@@ -47,7 +47,7 @@ export const NotificationService = {
     return this.notify({
       userId,
       type: NotificationType.WELCOME,
-      title: 'Welcome to BiblioHub',
+      title: 'Welcome to the KNUST Library',
       message: `Hi ${fullName}, your library account is ready. Browse the catalogue and reserve titles anytime.`,
       email: true,
     });

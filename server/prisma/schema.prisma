@@ -1,4 +1,4 @@
-// BiblioHub Prisma schema
+// Automated Library System (ALS) Prisma schema
 // UUID PKs, createdAt/updatedAt everywhere, soft-delete on User/Book/BookCopy.
 
 generator client {

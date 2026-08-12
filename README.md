@@ -1,12 +1,15 @@
-# 📚 BiblioHub
+# Automated Library System (ALS)
 
-Automated Library Management System, a web app with a **member portal** and a **staff/admin back office** over one API.
+A web-based library management system for the KNUST libraries, with a **member portal** and a **staff/admin back office** over one API.
 
 - **Frontend:** React 18 · Vite · TypeScript · Tailwind · React Router · TanStack Query · Axios · Recharts
 - **Backend:** Node 20 · Express 4 · TypeScript · Prisma · PostgreSQL 15+ · JWT · Zod · Nodemailer · node-cron
 - **Roles:** MEMBER → LIBRARIAN → ADMIN (RBAC enforced server-side)
 
 > Email, in-app notifications, and reservations are **core scope**.
+
+A full systems proposal covering the problem, actors, requirements, design, and stack is in
+[`ALS_Systems_Proposal_v1.pdf`](ALS_Systems_Proposal_v1.pdf).
 
 ---
 
@@ -47,7 +50,7 @@ cp client/.env.example client/.env
 
 # 3. Create the database schema and seed defaults
 npm run db:migrate      # runs prisma migrate dev
-npm run db:seed         # seeds Settings (and admin user in later phases)
+npm run db:seed         # seeds settings, subject taxonomy, demo accounts, sample catalogue
 
 # 4. Run both apps together
 npm run dev
@@ -66,6 +69,9 @@ The client dev server proxies `/api` to the API, so no CORS setup is needed in d
 | ADMIN | `admin@bibliohub.local` | `STAFF-0001` | `Admin123!` |
 | LIBRARIAN | `librarian@bibliohub.local` | `STAFF-0002` | `Librarian123!` |
 | MEMBER | `member@bibliohub.local` | `STU-100245` | `Member123!` |
+
+> These demo addresses still use the project's former name. Renaming them means re-seeding,
+> which drops any data added since, so they are left as they are until you want that done.
 
 ---
 
@@ -111,6 +117,8 @@ Phased roadmap: verification gate after each phase.
 - [x] **Phase 6**: Fines & enforcement (auto-fine, pay/waive, defaulters, suspend)
 - [x] **Phase 7**: Notifications & email + reports (in-app + email, cron jobs, dashboard charts)
 - [x] **Phase 8**: Polish (responsive nav, error boundary, empty/loading states, tests, docs)
+- [x] **Phase 9**: Identity & oversight (KNUST branding, light/dark themes, shared icon set, barcode
+      circulation console, audit trail, staff activity, required phone numbers)
 
 ---
 
@@ -137,6 +145,7 @@ RBAC is enforced server-side; **Staff** = LIBRARIAN+, **Admin** = ADMIN only.
 | Fines | `GET /fines`, `/fines/defaulters`, `POST /fines/:id/pay · /waive` | staff |
 | Notifications | `GET /notifications`, `POST /notifications/read-all · /:id/read` | auth |
 | Reports | `GET /reports/dashboard · /most-borrowed · /stock-status` | staff |
+| Reports | `GET /reports/staff-activity · /audit-log` | admin |
 | Settings | `GET /settings` (staff), `PATCH /settings/:key` (admin) | staff/admin |
 
 ### Scheduled jobs (node-cron)
@@ -160,6 +169,8 @@ auth, RBAC, catalogue, circulation, eligibility, reservations, fines, notificati
 npm test          # from repo root (runs the server workspace suite)
 ```
 
+11 suites, 52 tests.
+
 > Tests create and clean up their own data; run them against a dev database.
 
 ---
@@ -172,8 +183,24 @@ notification dispatch) are wired through registered hooks to keep modules decoup
 circular imports. Money-and-state transitions (checkout, return + fine, reservation promotion)
 run inside Prisma transactions.
 
+Actions that move stock, move money, or change an account (checkout, return, renew, fine paid,
+fine waived, suspension, reactivation, role change) are recorded in an audit log against the
+staff member who performed them. Audit writes never throw, so a logging failure cannot roll back
+a transaction that already happened.
+
+---
+
+## Known gaps
+
+- Amounts are rendered in Ghana cedis on the client, but a few server-generated message strings
+  (fine notification, eligibility refusal) still format with a dollar sign. Values are unaffected.
+- Phone numbers are collected and required, but SMS dispatch is not implemented yet; notifications
+  are in-app and email only.
+
 ---
 
 ## Future enhancements (out of scope)
 
-MARC 21 / Z39.50 / SIP2 / RFID interoperability · multi-tenant SaaS · payment gateway integration · native mobile app · LLM-based recommendations.
+Mobile money fine settlement (MoMo via Paystack/Hubtel) · SMS notifications · university single
+sign-on · MARC 21 / Z39.50 / SIP2 / RFID interoperability · multi-branch holdings · native mobile
+app · LLM-based recommendations.

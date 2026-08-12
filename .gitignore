@@ -11,3 +11,6 @@ coverage/
 client/.vite/
 server/prisma/*.db
 *.tsbuildinfo
+
+# Proposal working files. Only the final PDF is tracked.
+*.docx

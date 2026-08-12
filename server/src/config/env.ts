@@ -17,7 +17,7 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_USER: z.string().optional().default(''),
   SMTP_PASS: z.string().optional().default(''),
-  MAIL_FROM: z.string().default('BiblioHub <no-reply@bibliohub.local>'),
+  MAIL_FROM: z.string().default('KNUST Library <no-reply@als.local>'),
 
   ENABLE_CRON: z
     .string()

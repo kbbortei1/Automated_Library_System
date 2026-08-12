@@ -1,8 +1,8 @@
 {
-  "name": "bibliohub",
+  "name": "als",
   "version": "0.1.0",
   "private": true,
-  "description": "BiblioHub: Automated Library Management System (monorepo)",
+  "description": "Automated Library System (ALS): library management for the KNUST libraries (monorepo)",
   "workspaces": [
     "server",
     "client"

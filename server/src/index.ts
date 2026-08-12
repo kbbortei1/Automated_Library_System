@@ -10,7 +10,7 @@ async function main() {
 
   const server = app.listen(env.PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`🚀 BiblioHub API listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+    console.log(`🚀 ALS API listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
   });
 
   const shutdown = async (signal: string) => {
