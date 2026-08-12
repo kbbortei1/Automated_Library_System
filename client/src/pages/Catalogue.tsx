@@ -105,7 +105,7 @@ export default function Catalogue() {
           onChange={(e) => setSort(e.target.value as 'title' | 'newest')}
           className="sm:w-44"
         >
-          <option value="title">Title (A–Z)</option>
+          <option value="title">Title (A to Z)</option>
           <option value="newest">Newest Arrivals</option>
         </Select>
       </div>
