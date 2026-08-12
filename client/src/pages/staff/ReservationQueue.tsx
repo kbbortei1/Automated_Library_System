@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
-import { Alert, Button, Card, Select } from '../../components/ui';
+import { Alert, Button, Select } from '../../components/ui';
+import { DataTable, type Column } from '../../components/DataTable';
 import { StaffHeader } from '../../components/StaffHeader';
+import { CalendarIcon } from '../../components/icons';
 import { formatDate } from '../../lib/format';
 import type { Reservation, ReservationStatus } from '../../types';
 
@@ -18,6 +20,7 @@ export default function ReservationQueue() {
   const qc = useQueryClient();
   const [status, setStatus] = useState<ReservationStatus | ''>('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['reservation-queue', status],
@@ -30,10 +33,50 @@ export default function ReservationQueue() {
     mutationFn: async (id: string) => (await api.post(`/reservations/${id}/cancel`)).data,
     onSuccess: () => {
       setError('');
+      setNotice('Reservation cancelled.');
       qc.invalidateQueries({ queryKey: ['reservation-queue'] });
     },
-    onError: (e) => setError(apiErrorMessage(e)),
+    onError: (e) => {
+      setNotice('');
+      setError(apiErrorMessage(e));
+    },
   });
+
+  // A READY hold expires, so staff need to see how many are waiting collection.
+  const readyCount = (data ?? []).filter((r) => r.status === 'READY').length;
+
+  const columns: Column<Reservation>[] = [
+    { header: 'Title', primary: true, className: 'font-medium text-fg', cell: (r) => r.book.title },
+    { header: 'Member', cell: (r) => r.user.fullName },
+    { header: 'Queue', cell: (r) => (r.status === 'PENDING' ? `#${r.queuePosition}` : '-') },
+    {
+      header: 'Status',
+      cell: (r) => (
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[r.status]}`}>
+          {r.status}
+        </span>
+      ),
+    },
+    {
+      header: 'Collect by',
+      cell: (r) => (r.status === 'READY' ? formatDate(r.expiresAt) : '-'),
+    },
+    {
+      header: 'Action',
+      action: true,
+      cell: (r) =>
+        r.status === 'PENDING' || r.status === 'READY' ? (
+          <Button
+            variant="danger"
+            className="px-3 py-1.5 text-xs"
+            onClick={() => cancel.mutate(r.id)}
+            disabled={cancel.isPending}
+          >
+            Cancel
+          </Button>
+        ) : null,
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,59 +98,27 @@ export default function ReservationQueue() {
       </div>
 
       {error && <Alert>{error}</Alert>}
+      {notice && <Alert kind="success">{notice}</Alert>}
+      {readyCount > 0 && (
+        <Alert kind="info">
+          {readyCount} {readyCount === 1 ? 'hold is' : 'holds are'} waiting collection at the desk.
+        </Alert>
+      )}
 
-      <Card className="overflow-x-auto p-0">
-        {isLoading ? (
-          <p className="p-6 text-fg-muted">Loading…</p>
-        ) : !data?.length ? (
-          <p className="p-6 text-fg-muted">No reservations.</p>
-        ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-border bg-surface-2 text-fg-muted">
-              <tr>
-                <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Member</th>
-                <th className="px-4 py-3 font-medium">Queue</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Collect by</th>
-                <th className="px-4 py-3 font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((r) => (
-                <tr key={r.id} className="border-b border-border-subtle">
-                  <td className="px-4 py-3 font-medium text-fg">{r.book.title}</td>
-                  <td className="px-4 py-3 text-fg-muted">{r.user.fullName}</td>
-                  <td className="px-4 py-3 text-fg-muted">
-                    {r.status === 'PENDING' ? `#${r.queuePosition}` : '-'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[r.status]}`}
-                    >
-                      {r.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-fg-muted">
-                    {r.status === 'READY' ? formatDate(r.expiresAt) : '-'}
-                  </td>
-                  <td className="px-4 py-3">
-                    {(r.status === 'PENDING' || r.status === 'READY') && (
-                      <Button
-                        variant="danger"
-                        onClick={() => cancel.mutate(r.id)}
-                        disabled={cancel.isPending}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </Card>
+      <DataTable
+        columns={columns}
+        rows={data}
+        keyOf={(r) => r.id}
+        isLoading={isLoading}
+        skeletonRows={5}
+        emptyIcon={<CalendarIcon />}
+        emptyTitle={status ? `No ${status.toLowerCase()} reservations` : 'No reservations'}
+        emptyBody={
+          status
+            ? 'Try a different status filter.'
+            : 'Holds appear here when members reserve a title.'
+        }
+      />
     </div>
   );
 }
