@@ -12,6 +12,7 @@ import {
 import { api } from '../../lib/api';
 import { Avatar, Badge, Card, StatCard } from '../../components/ui';
 import { StaffHeader } from '../../components/StaffHeader';
+import { CheckCircleIcon } from '../../components/icons';
 import { money } from '../../lib/format';
 import type { DashboardStats, Loan, MostBorrowed, Paginated } from '../../types';
 
@@ -185,7 +186,10 @@ export default function StaffDashboard() {
             </div>
             <div className="mt-4 overflow-x-auto">
               {!overdue?.items.length ? (
-                <p className="px-6 pb-6 text-sm text-fg-muted">No overdue items. 🎉</p>
+                <p className="flex items-center gap-2 px-6 pb-6 text-sm text-fg-muted">
+                  <CheckCircleIcon className="h-4 w-4 text-accent" />
+                  No overdue items.
+                </p>
               ) : (
                 <table className="w-full text-left text-sm">
                   <thead className="border-y border-border-subtle bg-surface-2 text-xs uppercase tracking-wide text-fg-subtle">
