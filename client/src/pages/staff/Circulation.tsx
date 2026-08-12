@@ -5,6 +5,7 @@ import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Avatar, Badge, Button, Card } from '../../components/ui';
 import { BookCover } from '../../components/BookCover';
 import { StaffHeader } from '../../components/StaffHeader';
+import { CheckIcon } from '../../components/icons';
 import { formatDate, money } from '../../lib/format';
 import type { Eligibility, Loan, Paginated, User } from '../../types';
 
@@ -267,7 +268,8 @@ export default function Circulation() {
                 disabled={copy.status !== 'AVAILABLE' || checkout.isPending}
                 onClick={() => checkout.mutate()}
               >
-                ✓ Process Checkout
+                <CheckIcon className="h-4 w-4" />
+                Process Checkout
               </Button>
             </div>
           )}
