@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { api, apiErrorMessage } from '../../lib/api';
 import { Alert, Button, Card, Input } from '../../components/ui';
 import { StaffHeader } from '../../components/StaffHeader';
+import { PinIcon } from '../../components/icons';
 import { money } from '../../lib/format';
 
 interface ReturnResult {
@@ -70,7 +71,10 @@ export default function Returns() {
             <div>No fine, returned on time.</div>
           )}
           {info.reservationPromoted && (
-            <div>📌 Held for the next member in the reservation queue.</div>
+            <div className="flex items-center gap-2">
+              <PinIcon className="h-4 w-4 shrink-0" />
+              Held for the next member in the reservation queue.
+            </div>
           )}
         </Alert>
       )}
