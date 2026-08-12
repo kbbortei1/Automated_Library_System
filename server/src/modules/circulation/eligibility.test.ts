@@ -19,7 +19,7 @@ describe('eligibility (FR13)', () => {
 
     const reg = await request(app)
       .post('/api/auth/register')
-      .send({ fullName: 'Eligibility Member', email, password: 'password123' });
+      .send({ fullName: 'Eligibility Member', email, password: 'password123', phone: '024 111 2222' });
     memberId = reg.body.user.id;
 
     const cat = await prisma.category.upsert({ where: { name: 'EligCat' }, update: {}, create: { name: 'EligCat' } });

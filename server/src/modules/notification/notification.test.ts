@@ -16,7 +16,7 @@ describe('notifications & scheduler', () => {
   beforeAll(async () => {
     const reg = await request(app)
       .post('/api/auth/register')
-      .send({ fullName: 'Notif User', email, password: 'password123' });
+      .send({ fullName: 'Notif User', email, password: 'password123', phone: '024 333 4444' });
     token = reg.body.accessToken;
     userId = reg.body.user.id;
 

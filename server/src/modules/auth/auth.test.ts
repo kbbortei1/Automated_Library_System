@@ -22,6 +22,7 @@ describe('auth flow', () => {
       fullName: 'Test User',
       email: unique,
       password: 'password123',
+      phone: '024 123 4567',
     });
     expect(res.status).toBe(201);
     expect(res.body.accessToken).toBeTruthy();
@@ -35,6 +36,7 @@ describe('auth flow', () => {
       fullName: 'Test User',
       email: unique,
       password: 'password123',
+      phone: '024 123 4567',
     });
     expect(res.status).toBe(409);
   });
