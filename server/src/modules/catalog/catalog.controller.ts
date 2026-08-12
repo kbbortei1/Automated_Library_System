@@ -23,7 +23,7 @@ export const CatalogController = {
 
   // --- Copies ---
   async addCopy(req: Request, res: Response) {
-    res.status(201).json(await CopyService.addCopy({ bookId: req.params.id, ...req.body }));
+    res.status(201).json(await CopyService.addCopies({ bookId: req.params.id, ...req.body }));
   },
   async listCopies(req: Request, res: Response) {
     res.json(await CopyService.listByBook(req.params.id));

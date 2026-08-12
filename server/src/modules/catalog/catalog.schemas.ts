@@ -44,6 +44,9 @@ export const addCopySchema = z.object({
   accessionNumber: z.string().min(1).max(60),
   shelfLocation: z.string().min(1).max(120),
   acquiredDate: z.coerce.date().optional(),
+  // Accessioning a new title usually means several identical copies at once.
+  // The accession number given is the first; the rest continue from it.
+  quantity: z.coerce.number().int().min(1).max(50).optional(),
 });
 
 export const updateCopyStatusSchema = z.object({

@@ -10,6 +10,66 @@ const MANUAL_STATUSES: CopyStatus[] = [
 ];
 
 export const CopyService = {
+  /**
+   * Next accession number in a run.
+   *
+   * Library accession numbers end in a counter, often zero-padded
+   * ("KNUST-00042"). Incrementing the trailing digits preserves that width so
+   * a run stays sortable; with no trailing digits we fall back to a suffix.
+   */
+  nextAccession(accession: string, offset: number): string {
+    const m = accession.match(/^(.*?)(\d+)$/);
+    if (!m) return `${accession}-${offset + 1}`;
+    const [, prefix, digits] = m;
+    const next = String(Number(digits) + offset).padStart(digits.length, '0');
+    return prefix + next;
+  },
+
+  /**
+   * Create `quantity` copies starting from the given accession number.
+   *
+   * All numbers are checked before anything is written, so a clash partway
+   * through cannot leave a half-finished run behind.
+   */
+  async addCopies(input: {
+    bookId: string;
+    accessionNumber: string;
+    shelfLocation: string;
+    acquiredDate?: Date;
+    quantity?: number;
+  }) {
+    const quantity = input.quantity ?? 1;
+    const book = await prisma.book.findFirst({ where: { id: input.bookId, deletedAt: null } });
+    if (!book) throw new NotFoundError('Book not found');
+
+    const numbers = Array.from({ length: quantity }, (_, i) =>
+      this.nextAccession(input.accessionNumber, i),
+    );
+
+    const clashes = await prisma.bookCopy.findMany({
+      where: { accessionNumber: { in: numbers } },
+      select: { accessionNumber: true },
+    });
+    if (clashes.length) {
+      throw new ConflictError(
+        `Already in use: ${clashes.map((c) => c.accessionNumber).join(', ')}`,
+      );
+    }
+
+    return prisma.$transaction(
+      numbers.map((accessionNumber) =>
+        prisma.bookCopy.create({
+          data: {
+            bookId: input.bookId,
+            shelfLocation: input.shelfLocation,
+            acquiredDate: input.acquiredDate,
+            accessionNumber,
+          },
+        }),
+      ),
+    );
+  },
+
   async addCopy(input: {
     bookId: string;
     accessionNumber: string;
