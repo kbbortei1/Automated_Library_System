@@ -37,41 +37,75 @@ const DEFAULT_SETTINGS: { key: string; value: string; description: string }[] = 
   { key: 'borrowing_limit_faculty', value: '10', description: 'Borrowing limit for FACULTY members' },
   { key: 'borrowing_limit_public', value: '3', description: 'Borrowing limit for PUBLIC members' },
   { key: 'due_soon_reminder_days', value: '2', description: 'Days before due date to send reminder' },
-  // Published contact details, shown to members in the Support pages. Seeded
-  // empty on purpose: the pages say the detail has not been published yet
-  // rather than showing a number nobody verified.
+  // Published contact details, shown to members in the Support pages.
+  //
+  // Taken from the KNUST Library's own site (library.knust.edu.gh, checked
+  // 13 August 2026), not invented. An administrator can correct any of them
+  // under Settings without a deployment, and re-running this seed will not
+  // overwrite an edit, because the upsert below only refreshes descriptions.
   {
     key: 'library_phone',
-    value: '',
-    description: 'Library enquiries phone number, shown to members',
+    value: '+233 32 206 0133',
+    description: "University Librarian's Office. Shown to members on Contact Staff.",
   },
   {
+    // Deliberately empty: the library publishes phone numbers but no general
+    // enquiries address, so the page says none is published rather than
+    // guessing at one. Fill it in if the library issues one.
     key: 'library_email',
     value: '',
-    description: 'Library enquiries email address, shown to members',
+    description: 'Library enquiries email address, shown to members. Blank publishes nothing.',
   },
   {
     key: 'library_hours',
-    value: '',
+    value:
+      'The Prempeh II Library runs a 24 hour service during mid-semester and ' +
+      'end-of-semester examination weeks. Ask at the desk for term-time hours.',
     description: 'Opening hours, free text, shown to members',
   },
   {
     key: 'library_locations',
-    value: '',
+    value: [
+      // Only the main library has a location and hours published. The six
+      // college libraries are listed by name alone rather than repeating the
+      // college back at the reader as if it were an address.
+      'Prempeh II Library | Main campus, Kumasi. The management centre for the university library system. | 24 hour service during examination weeks',
+      'College of Agriculture and Natural Resources Library',
+      'College of Art and Built Environment Library',
+      'College of Engineering Library',
+      'College of Health Sciences Library',
+      'College of Humanities and Social Sciences Library',
+      'College of Science Library',
+    ].join('\n'),
     description: 'One library per line, as "Name | Where to find it | Hours"',
   },
 ];
 
 async function main() {
+  let backfilled = 0;
   for (const s of DEFAULT_SETTINGS) {
+    const existing = await prisma.setting.findUnique({ where: { key: s.key } });
+
+    // An administrator's edit is never overwritten. An empty stored value is
+    // not an edit though, it means the setting was created before it had a
+    // default, so seeding may fill it in.
+    const shouldBackfill = existing !== null && existing.value.trim() === '' && s.value !== '';
+    if (shouldBackfill) backfilled += 1;
+
     await prisma.setting.upsert({
       where: { key: s.key },
-      update: { description: s.description },
+      update: {
+        description: s.description,
+        ...(shouldBackfill ? { value: s.value } : {}),
+      },
       create: s,
     });
   }
   // eslint-disable-next-line no-console
-  console.log(`✅ Seeded ${DEFAULT_SETTINGS.length} settings`);
+  console.log(
+    `✅ Seeded ${DEFAULT_SETTINGS.length} settings` +
+      (backfilled ? ` (${backfilled} empty value(s) filled in)` : ''),
+  );
 
   await seedUsers();
   await seedCategories();
