@@ -266,7 +266,7 @@ async function seedUsers() {
   }[] = [
     {
       fullName: 'Library Admin',
-      email: 'admin@bibliohub.local',
+      email: 'admin@als.local',
       identifier: 'STAFF-0001',
       password: 'Admin123!',
       role: Role.ADMIN,
@@ -274,7 +274,7 @@ async function seedUsers() {
     },
     {
       fullName: 'Front Desk Librarian',
-      email: 'librarian@bibliohub.local',
+      email: 'librarian@als.local',
       identifier: 'STAFF-0002',
       password: 'Librarian123!',
       role: Role.LIBRARIAN,
@@ -282,7 +282,7 @@ async function seedUsers() {
     },
     {
       fullName: 'Sample Member',
-      email: 'member@bibliohub.local',
+      email: 'member@als.local',
       identifier: 'STU-100245',
       password: 'Member123!',
       role: Role.MEMBER,
@@ -290,10 +290,13 @@ async function seedUsers() {
     },
   ];
 
+  // Keyed on the member ID, not the email. The ID is the stable identity of a
+  // seeded account, so re-seeding after an email change updates the existing
+  // row instead of colliding with its unique identifier.
   for (const a of accounts) {
     await prisma.user.upsert({
-      where: { email: a.email },
-      update: { role: a.role, identifier: a.identifier },
+      where: { identifier: a.identifier },
+      update: { role: a.role, email: a.email, fullName: a.fullName },
       create: {
         fullName: a.fullName,
         email: a.email,

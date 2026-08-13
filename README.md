@@ -1,137 +1,189 @@
 # Automated Library System (ALS)
 
-A web-based library management system for the KNUST libraries, with a **member portal** and a **staff/admin back office** over one API.
+A web-based library management system for the KNUST libraries: a **member portal** for
+students, faculty and public borrowers, and a **staff and administrator back office**, served by
+one REST API.
 
-- **Frontend:** React 18 · Vite · TypeScript · Tailwind · React Router · TanStack Query · Axios · Recharts
-- **Backend:** Node 20 · Express 4 · TypeScript · Prisma · PostgreSQL 15+ · JWT · Zod · Nodemailer · node-cron
-- **Roles:** MEMBER → LIBRARIAN → ADMIN (RBAC enforced server-side)
+Members search the catalogue, see live availability, reserve titles they cannot get today, track
+their loans and fines, and are reminded before a book falls due. Staff run a circulation desk built
+around a barcode scanner. Administrators set the library's policy and can trace who did what.
 
-> Email, in-app notifications, and reservations are **core scope**.
-
-A full systems proposal covering the problem, actors, requirements, design, and stack is in
-[`ALS_Systems_Proposal_v1.pdf`](ALS_Systems_Proposal_v1.pdf).
-
----
-
-## Monorepo layout
-
-```
-.
-├── server/   Express + Prisma API
-│   ├── prisma/        schema.prisma, seed.ts, migrations
-│   └── src/           config, lib, middleware, feature modules
-├── client/   React + Vite SPA
-│   └── src/           lib, components, pages
-└── package.json       npm workspaces + dev scripts
-```
+> The systems proposal (problem, actors, requirements, design, stack) is supplied **alongside**
+> this repository, not inside it. Read it first for the why; this file covers the how.
 
 ---
 
-## Prerequisites
+## Contents
 
-- Node.js **20+**
-- PostgreSQL **15+** running locally (or reachable via `DATABASE_URL`)
+- [Running it](#running-it) · [Seeded accounts](#seeded-accounts) · [Scripts](#scripts)
+- [How it is put together](#how-it-is-put-together) · [Repository layout](#repository-layout)
+- [Domain rules worth knowing](#domain-rules-worth-knowing)
+- [API reference](#api-reference) · [Scheduled jobs](#scheduled-jobs)
+- [Testing](#testing) · [Configuration](#configuration)
+- [Build status](#build-status) · [Known gaps](#known-gaps)
 
 ---
 
-## Quick start
+## Running it
+
+**Prerequisites:** Node.js **20+**, PostgreSQL **15+**.
 
 ```bash
-# 1. Install all workspace dependencies
-npm install
+npm install                     # installs both workspaces
 
-# 2. Configure the server environment
 cp server/.env.example server/.env
-#   → edit DATABASE_URL with your Postgres credentials
-#   → set JWT secrets (any non-empty strings in dev)
+#   set DATABASE_URL to your Postgres connection string
+#   the JWT secrets can be any non-empty strings in development
 
-# (optional) client env, defaults work via Vite proxy
-cp client/.env.example client/.env
-
-# 3. Create the database schema and seed defaults
-npm run db:migrate      # runs prisma migrate dev
-npm run db:seed         # seeds settings, subject taxonomy, demo accounts, sample catalogue
-
-# 4. Run both apps together
-npm run dev
-#   API    → http://localhost:4000  (health: /api/health)
-#   Client → http://localhost:5173
+npm run db:migrate              # create the schema
+npm run db:seed                 # settings, subject taxonomy, demo accounts, sample catalogue
+npm run dev                     # API on :4000, client on :5173
 ```
 
-The client dev server proxies `/api` to the API, so no CORS setup is needed in development.
+Open <http://localhost:5173>. The client dev server proxies `/api` to the API, so no CORS
+configuration is needed to develop. Health check: <http://localhost:4000/api/health>.
+
+`npm run db:seed` is idempotent and safe to re-run; it will not duplicate anything.
 
 ### Seeded accounts
 
-`npm run db:seed` creates three login accounts. You can sign in with **either the email or the member ID** (staff ID / student number / index), plus the password.
+Sign in with **either the email or the member ID**, plus the password.
 
 | Role | Email | Member ID | Password |
 |---|---|---|---|
-| ADMIN | `admin@bibliohub.local` | `STAFF-0001` | `Admin123!` |
-| LIBRARIAN | `librarian@bibliohub.local` | `STAFF-0002` | `Librarian123!` |
-| MEMBER | `member@bibliohub.local` | `STU-100245` | `Member123!` |
+| ADMIN | `admin@als.local` | `STAFF-0001` | `Admin123!` |
+| LIBRARIAN | `librarian@als.local` | `STAFF-0002` | `Librarian123!` |
+| MEMBER | `member@als.local` | `STU-100245` | `Member123!` |
 
-> These demo addresses still use the project's former name. Renaming them means re-seeding,
-> which drops any data added since, so they are left as they are until you want that done.
+Development passwords only. Anything real needs its own accounts and secrets.
 
----
+### Scripts
 
-## Scripts (root)
+Run from the repository root.
 
 | Script | Action |
 |---|---|
-| `npm run dev` | Run server + client together (concurrently) |
-| `npm run dev:server` / `npm run dev:client` | Run one app |
-| `npm run build` | Type-check and build both apps |
-| `npm run db:migrate` | Apply Prisma migrations (dev) |
-| `npm run db:seed` | Seed default data |
-| `npm run db:reset` | Drop, re-migrate, and re-seed |
-| `npm test` | Run backend tests (Vitest + Supertest) |
+| `npm run dev` | Server and client together |
+| `npm run dev:server` / `npm run dev:client` | One at a time |
+| `npm run build` | Type-check and build both |
+| `npm test` | Backend test suite |
+| `npm run db:migrate` | Apply migrations |
+| `npm run db:seed` | Seed defaults (idempotent) |
+| `npm run db:reset` | Drop, re-migrate and re-seed |
 
 ---
 
-## Environment variables (`server/.env`)
+## How it is put together
 
-| Key | Purpose |
+**Stack.** React 18 · Vite · TypeScript · Tailwind · React Router · TanStack Query · Recharts on
+the front. Node 20 · Express 4 · TypeScript · Prisma 6 · PostgreSQL 15 · Zod · JWT · Nodemailer ·
+node-cron behind it. Tests are Vitest and Supertest. One npm-workspaces repository, so a change to
+an API contract and the screen consuming it travel together.
+
+**Layering.** Every backend feature module is the same four layers:
+
+```
+routes  →  controller  →  service  →  Prisma
+```
+
+Routes declare the path and attach middleware. Controllers read the request and shape the
+response, and stay thin on purpose. Services hold the business rules, so a rule has one home and
+can be tested without an HTTP request. Prisma does the data access.
+
+**Three decisions worth knowing before reading the code:**
+
+1. **Transactions wrap anything that moves stock and money together.** Checkout, return-with-fine
+   and reservation promotion each run inside a single Prisma transaction, so a copy can never be
+   issued without its loan, or returned without its fine.
+
+2. **Cross-module effects are hooks, not imports.** A return has to promote the reservation queue,
+   but importing each service into the other would be a cycle. Circulation exposes hook points at
+   start-up and the reservation module fills them in, so circulation knows something *may* claim a
+   returned copy without knowing what. See the bottom of `reservation.service.ts`.
+
+3. **Notifications are dispatched after commit, never inside it.** Notices raised during a
+   transaction are queued and flushed once it commits, so a mail failure cannot roll back a return
+   that already happened. The audit log follows the same principle and never throws.
+
+**Authorisation** is enforced server-side, always. The browser is a convenience, never a
+safeguard. Two separate checks:
+
+- `requireRole(min)` gates the endpoint by rank (MEMBER 1, LIBRARIAN 2, ADMIN 3).
+- `canAdminister(actor, target)` gates *who the action is aimed at*. Role alone is not enough: a
+  librarian passing a LIBRARIAN check could otherwise suspend an administrator. Nobody may act on
+  someone who outranks them, on a peer unless they are an admin, or on their own account.
+
+### Repository layout
+
+```
+server/
+  prisma/
+    schema.prisma            14 models, UUID keys, soft delete where history matters
+    seed.ts                  settings, subject taxonomy, demo accounts, sample catalogue
+    migrations/
+  src/
+    app.ts                   router composition and middleware order
+    index.ts                 startup, scheduler registration, graceful shutdown
+    config/env.ts            environment parsed and validated by Zod at boot
+    lib/                     prisma client, jwt, password, mailer, money, errors
+    middleware/              auth (roles), validate (Zod), errorHandler
+    modules/
+      auth/                  register, login by email or member ID, refresh
+      user/                  profile, member management, roles
+      catalog/               books, copies, accession numbering, lookups
+      circulation/           checkout, return, renew, eligibility rules
+      reservation/           FIFO queue, promotion, expiry
+      fine/                  automatic fines, payment, waiver, defaulters
+      notification/          in-app records and email dispatch
+      report/                dashboard, rankings, staff activity, audit trail
+      setting/               library policy, published policy subset
+      audit/                 who did what, and the staff activity summary
+      scheduler/             overdue sweep, reminders, hold expiry
+
+client/
+  src/
+    App.tsx                  routes, grouped by who may reach them
+    components/              layouts, DataTable, shared UI, icon set
+    lib/                     api client, auth context, theme, policy, formatting
+    pages/                   member pages, staff/, admin/, help/
+```
+
+---
+
+## Domain rules worth knowing
+
+These are the rules a reviewer would otherwise have to reverse-engineer.
+
+| Rule | Where it lives |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `PORT` | API port (default 4000) |
-| `CORS_ORIGINS` | Comma-separated allowed origins |
-| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Token signing secrets |
-| `JWT_ACCESS_TTL` / `JWT_REFRESH_TTL` | Token lifetimes |
-| `BCRYPT_ROUNDS` | bcrypt cost (≥10) |
-| `SMTP_*` / `MAIL_FROM` | Email transport (blank → console/Ethereal in dev) |
-| `ENABLE_CRON` | Toggle scheduled jobs |
+| A checkout is refused if the member is suspended, at their borrowing limit, or owes more than the threshold | `circulation/eligibility.service.ts` |
+| A held copy is only ever released to the member it is held for | `circulation/circulation.service.ts` |
+| Due date comes from the member's own loan period, not a global constant | `circulation/circulation.service.ts` |
+| Renewal allowance is per membership type, falling back to a global default | `circulation/circulation.service.ts` |
+| Renewal is refused while anyone is waiting for the title | hook in `reservation/reservation.service.ts` |
+| An overdue fine is days late times the configured daily rate, raised on return | `circulation/circulation.service.ts` |
+| Returning a copy promotes the front of the queue, or puts it back on the shelf | hook in `reservation/reservation.service.ts` |
+| An uncollected hold expires and passes to the next member | `reservation/reservation.service.ts` |
+| Accession numbers increment while preserving zero padding, and a batch is all-or-nothing | `catalog/copy.service.ts` |
+| Every action that moves stock, money or an account records its actor | `audit/audit.service.ts` |
+
+Policy values (loan period, fine rate, renewal allowances, borrowing limits, thresholds, windows)
+live in the `Setting` table and are editable by an administrator at runtime. Nothing above is
+hard-coded.
 
 ---
 
-## Build status
+## API reference
 
-Phased roadmap: verification gate after each phase.
+Everything is under `/api`. Only the health check and the three auth routes are public; the rest
+need `Authorization: Bearer <accessToken>`. **Staff** means LIBRARIAN or above, **Admin** means
+ADMIN only.
 
-- [x] **Phase 0**: Scaffold (both apps boot, Prisma↔Postgres, health check)
-- [x] **Phase 1**: Auth & RBAC (register/login/refresh, JWT, bcrypt, role middleware, auth UI)
-- [x] **Phase 2**: Catalogue & inventory (book CRUD, copies, reusable lookups)
-- [x] **Phase 3**: Search (public catalogue, filters, book detail live availability)
-- [x] **Phase 4**: Circulation (transactional checkout/return/renew, overdue sweep)
-- [x] **Phase 5**: Reservations (FIFO queue, promote-on-return, cancel/expire)
-- [x] **Phase 6**: Fines & enforcement (auto-fine, pay/waive, defaulters, suspend)
-- [x] **Phase 7**: Notifications & email + reports (in-app + email, cron jobs, dashboard charts)
-- [x] **Phase 8**: Polish (responsive nav, error boundary, empty/loading states, tests, docs)
-- [x] **Phase 9**: Identity & oversight (KNUST branding, light/dark themes, shared icon set, barcode
-      circulation console, audit trail, staff activity, required phone numbers)
-
----
-
-## API reference (overview)
-
-All routes are under `/api`. Protected routes require `Authorization: Bearer <accessToken>`.
-RBAC is enforced server-side; **Staff** = LIBRARIAN+, **Admin** = ADMIN only.
-
-| Area | Method & path | Access |
+| Area | Method and path | Access |
 |---|---|---|
 | Health | `GET /health` | public |
 | Auth | `POST /auth/register · /auth/login · /auth/refresh` | public |
-| ↳ login | body `{ identifier, password }`, `identifier` = email **or** member ID | public |
+| ↳ login | body `{ identifier, password }`, identifier = email **or** member ID | public |
 | Profile | `GET/PATCH /users/me`, `POST /users/me/change-password` | auth |
 | Members | `GET /users`, `PATCH /users/:id/status` | staff |
 | Roles | `PATCH /users/:id/role · /users/:id/membership` | admin |
@@ -144,63 +196,112 @@ RBAC is enforced server-side; **Staff** = LIBRARIAN+, **Admin** = ADMIN only.
 | Fines | `GET /fines/mine` | auth |
 | Fines | `GET /fines`, `/fines/defaulters`, `POST /fines/:id/pay · /waive` | staff |
 | Notifications | `GET /notifications`, `POST /notifications/read-all · /:id/read` | auth |
+| Settings | `GET /settings/policy` (published subset) | auth |
+| Settings | `GET /settings` (all), `PATCH /settings/:key` | staff / admin |
 | Reports | `GET /reports/dashboard · /most-borrowed · /stock-status` | staff |
 | Reports | `GET /reports/staff-activity · /audit-log` | admin |
-| Settings | `GET /settings` (staff), `PATCH /settings/:key` (admin) | staff/admin |
 
-### Scheduled jobs (node-cron)
+Success returns the resource directly. Failure always returns the same envelope:
+
+```json
+{ "error": { "code": "VALIDATION_ERROR", "message": "Validation failed", "details": {} } }
+```
+
+422 validation · 401 unauthenticated · 403 forbidden · 409 unique constraint · 404 missing.
+
+### Scheduled jobs
 
 | Job | Schedule | Effect |
 |---|---|---|
-| Overdue sweep | nightly 01:00 | notify + mark ACTIVE loans past due as OVERDUE |
-| Due-soon reminders | daily 08:00 | notify members of loans due within the reminder window |
-| Hold expiry | hourly | expire READY reservations and release/promote the copy |
+| Overdue sweep | nightly 01:00 | notify borrowers, then mark loans past due as OVERDUE |
+| Due-soon reminders | daily 08:00 | notify members of loans due inside the reminder window |
+| Hold expiry | hourly | expire uncollected holds and pass the copy on |
 
-Toggle with `ENABLE_CRON` in `server/.env`.
+Each job is a plain function a test can call directly. Toggle with `ENABLE_CRON`.
 
 ---
 
 ## Testing
 
-Backend tests use Vitest + Supertest against the real database (happy + failure paths across
-auth, RBAC, catalogue, circulation, eligibility, reservations, fines, notifications/scheduler).
-
 ```bash
-npm test          # from repo root (runs the server workspace suite)
+npm test
 ```
 
-11 suites, 52 tests.
+**12 suites, 56 tests.** They run over real HTTP with Supertest against a real PostgreSQL
+database rather than mocks, because what matters most here is transactional and a mock cannot
+show that a transaction rolled back. Each suite creates and removes its own data.
 
-> Tests create and clean up their own data; run them against a dev database.
+| Suite | Tests | What it protects |
+|---|---|---|
+| Health | 1 | Process up, database reachable |
+| Authentication | 8 | Registration, sign-in by email and member ID, refresh, bad credentials |
+| Phone validation | 5 | Ghanaian formats accepted, missing and malformed refused |
+| Authorisation | 6 | No acting on a superior, a peer, or oneself |
+| Catalogue | 5 | Book creation, duplicate ISBN, search and filtering |
+| Accession numbering | 5 | Zero padding preserved, whole batch refused on collision |
+| Circulation | 4 | Transactional checkout and return, due dates, fine calculation |
+| Eligibility | 3 | Suspension, borrowing limit and fine threshold each block a loan |
+| Reservations | 6 | Queue order, promotion, expiry, cancellation, re-sequencing |
+| Fines | 5 | Creation, payment, waiver, defaulters report |
+| Notifications and scheduler | 4 | Notification records, overdue sweep, reminder window |
+| Published policy | 4 | Members read policy, unlisted keys stay private |
+
+> Run against a development database.
 
 ---
 
-## Architecture
+## Configuration
 
-Layered backend per module: **routes → controller → service → Prisma**. Controllers stay thin;
-business rules live in services. Cross-module side effects (reservation promotion on return,
-notification dispatch) are wired through registered hooks to keep modules decoupled and avoid
-circular imports. Money-and-state transitions (checkout, return + fine, reservation promotion)
-run inside Prisma transactions.
+`server/.env`, from `server/.env.example`. Parsed and validated by Zod at start-up, so a bad
+value fails immediately with a readable message rather than at first use.
 
-Actions that move stock, move money, or change an account (checkout, return, renew, fine paid,
-fine waived, suspension, reactivation, role change) are recorded in an audit log against the
-staff member who performed them. Audit writes never throw, so a logging failure cannot roll back
-a transaction that already happened.
+| Key | Purpose |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `PORT` | API port, default 4000 |
+| `CORS_ORIGINS` | Comma-separated allowed origins |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Token signing secrets |
+| `JWT_ACCESS_TTL` / `JWT_REFRESH_TTL` | Token lifetimes |
+| `BCRYPT_ROUNDS` | bcrypt cost, 10 or higher |
+| `SMTP_*` / `MAIL_FROM` | Email transport, blank uses a console transport in development |
+| `ENABLE_CRON` | Turn scheduled jobs on or off |
+
+---
+
+## Build status
+
+Each phase ended in a verification gate: not finished until demonstrated against a running system.
+
+- [x] **0** Scaffold: both apps boot, Prisma reaches Postgres, health check
+- [x] **1** Auth and RBAC: register, login, refresh, hashing, role middleware
+- [x] **2** Catalogue and inventory: books, copies, shared lookups
+- [x] **3** Search: catalogue, filters, live availability
+- [x] **4** Circulation: transactional checkout, return, renew, overdue sweep
+- [x] **5** Reservations: queue, promotion on return, cancel and expiry
+- [x] **6** Fines: automatic fines, pay and waive, defaulters, suspension
+- [x] **7** Notifications and reporting: in-app and email, cron, dashboard charts
+- [x] **8** Polish: responsive navigation, error boundary, empty and loading states, tests
+- [x] **9** Identity and oversight: KNUST branding, light and dark themes, icon set, barcode
+      circulation console, audit trail, required phone numbers, member Support pages
 
 ---
 
 ## Known gaps
 
-- Amounts are rendered in Ghana cedis on the client, but a few server-generated message strings
-  (fine notification, eligibility refusal) still format with a dollar sign. Values are unaffected.
-- Phone numbers are collected and required, but SMS dispatch is not implemented yet; notifications
-  are in-app and email only.
+Stated rather than left to be discovered.
 
----
+- **Notifications are in-app and email only.** Phone numbers are collected and required, and the
+  registration form states that reminders are the reason, but SMS dispatch is not implemented.
+  Until it is, the number supports staff contacting a borrower directly.
+- **Fines are settled at the desk.** Staff record a payment or a waiver and both are attributed.
+  There is no online payment; mobile money is the intended next step.
+- **Library contact details ship empty.** `library_phone`, `library_email`, `library_hours` and
+  `library_locations` are seeded blank, and the member Support pages say so rather than showing
+  something unverified. An administrator fills them in under Settings.
+- **No fine appeals workflow.** A member disputes a fine at the desk; a librarian waives it.
 
-## Future enhancements (out of scope)
+### Beyond this scope
 
-Mobile money fine settlement (MoMo via Paystack/Hubtel) · SMS notifications · university single
-sign-on · MARC 21 / Z39.50 / SIP2 / RFID interoperability · multi-branch holdings · native mobile
-app · LLM-based recommendations.
+Mobile money settlement · SMS notifications · university single sign-on · MARC 21, Z39.50 and
+SIP2 interoperability · RFID and self-service kiosks · multi-branch holdings · native mobile app
+· recommendations from borrowing patterns.

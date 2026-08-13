@@ -2,6 +2,7 @@ import { NotificationChannel, NotificationType } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { sendMail } from '../../lib/mailer.js';
 import { NotFoundError } from '../../lib/errors.js';
+import { cedis } from '../../lib/money.js';
 
 interface NotifyInput {
   userId: string;
@@ -78,7 +79,7 @@ export const NotificationService = {
       userId,
       type: NotificationType.FINE_ISSUED,
       title: 'Fine issued',
-      message: `A fine of $${amount.toFixed(2)} has been added to your account (${reason}).`,
+      message: `A fine of ${cedis(amount)} has been added to your account (${reason}).`,
       email: true,
     });
   },

@@ -4,7 +4,7 @@ import { createApp } from '../../app.js';
 import { prisma } from '../../lib/prisma.js';
 
 const app = createApp();
-const unique = `test_${Date.now()}@bibliohub.test`;
+const unique = `test_${Date.now()}@als.test`;
 const idValue = `STU-${Date.now()}`;
 
 describe('auth flow', () => {

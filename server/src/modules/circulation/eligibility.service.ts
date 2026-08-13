@@ -2,6 +2,7 @@ import { FineStatus, LoanStatus, Prisma, UserStatus } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { ForbiddenError, NotFoundError } from '../../lib/errors.js';
 import { SettingService } from '../setting/setting.service.js';
+import { cedis } from '../../lib/money.js';
 
 type Tx = Prisma.TransactionClient | typeof prisma;
 
@@ -47,7 +48,7 @@ export const EligibilityService = {
       SettingService.getNumber('fine_block_threshold'),
     ]);
     if (outstanding > threshold) {
-      reasons.push(`Outstanding fines $${outstanding.toFixed(2)} exceed limit $${threshold.toFixed(2)}`);
+      reasons.push(`Outstanding fines ${cedis(outstanding)} exceed limit ${cedis(threshold)}`);
     }
 
     return { eligible: reasons.length === 0, reasons };

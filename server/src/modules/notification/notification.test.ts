@@ -5,7 +5,7 @@ import { prisma } from '../../lib/prisma.js';
 import { SchedulerService } from '../scheduler/scheduler.service.js';
 
 const app = createApp();
-const email = `notif_${Date.now()}@bibliohub.test`;
+const email = `notif_${Date.now()}@als.test`;
 let token = '';
 let userId = '';
 let bookId = '';

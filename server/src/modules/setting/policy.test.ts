@@ -16,8 +16,8 @@ describe('published policy', () => {
   let staffToken: string;
 
   beforeAll(async () => {
-    memberToken = await login('member@bibliohub.local', 'Member123!');
-    staffToken = await login('librarian@bibliohub.local', 'Librarian123!');
+    memberToken = await login('member@als.local', 'Member123!');
+    staffToken = await login('librarian@als.local', 'Librarian123!');
   });
 
   it('lets a member read the rules they are held to', async () => {

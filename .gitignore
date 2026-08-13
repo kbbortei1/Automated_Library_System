@@ -12,5 +12,6 @@ client/.vite/
 server/prisma/*.db
 *.tsbuildinfo
 
-# Proposal working files. Only the final PDF is tracked.
+# The systems proposal is delivered alongside this repository, not inside it.
 *.docx
+*.pdf

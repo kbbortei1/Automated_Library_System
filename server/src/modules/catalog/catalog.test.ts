@@ -16,8 +16,8 @@ async function login(email: string, password: string) {
 
 describe('catalog & inventory', () => {
   beforeAll(async () => {
-    staffToken = await login('librarian@bibliohub.local', 'Librarian123!');
-    memberToken = await login('member@bibliohub.local', 'Member123!');
+    staffToken = await login('librarian@als.local', 'Librarian123!');
+    memberToken = await login('member@als.local', 'Member123!');
   });
 
   afterAll(async () => {

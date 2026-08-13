@@ -18,9 +18,9 @@ async function login(email: string, password: string) {
 
 describe('circulation', () => {
   beforeAll(async () => {
-    staffToken = await login('librarian@bibliohub.local', 'Librarian123!');
-    memberToken = await login('member@bibliohub.local', 'Member123!');
-    memberId = (await prisma.user.findUniqueOrThrow({ where: { email: 'member@bibliohub.local' } })).id;
+    staffToken = await login('librarian@als.local', 'Librarian123!');
+    memberToken = await login('member@als.local', 'Member123!');
+    memberId = (await prisma.user.findUniqueOrThrow({ where: { email: 'member@als.local' } })).id;
 
     const cat = await prisma.category.upsert({ where: { name: 'CircTest' }, update: {}, create: { name: 'CircTest' } });
     const pub = await prisma.publisher.upsert({ where: { name: 'CircPub' }, update: {}, create: { name: 'CircPub' } });

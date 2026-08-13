@@ -8,13 +8,13 @@ let staffToken = '';
 let memberId = '';
 let bookId = '';
 let copyId = '';
-const email = `elig_${Date.now()}@bibliohub.test`;
+const email = `elig_${Date.now()}@als.test`;
 const isbn = `ELIG-${Date.now()}`;
 
 describe('eligibility (FR13)', () => {
   beforeAll(async () => {
     staffToken = (
-      await request(app).post('/api/auth/login').send({ email: 'librarian@bibliohub.local', password: 'Librarian123!' })
+      await request(app).post('/api/auth/login').send({ email: 'librarian@als.local', password: 'Librarian123!' })
     ).body.accessToken;
 
     const reg = await request(app)

@@ -1,6 +1,6 @@
 // Token persistence in localStorage. Single source of truth for the Axios interceptor.
-const ACCESS_KEY = 'bibliohub.accessToken';
-const REFRESH_KEY = 'bibliohub.refreshToken';
+const ACCESS_KEY = 'als.accessToken';
+const REFRESH_KEY = 'als.refreshToken';
 
 export const tokenStore = {
   getAccess: () => localStorage.getItem(ACCESS_KEY),

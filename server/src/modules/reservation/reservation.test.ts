@@ -12,7 +12,7 @@ let secondToken = '';
 let bookId = '';
 let copyId = '';
 const isbn = `RES-${Date.now()}`;
-const secondEmail = `res_second_${Date.now()}@bibliohub.test`;
+const secondEmail = `res_second_${Date.now()}@als.test`;
 
 async function login(email: string, password: string) {
   return (await request(app).post('/api/auth/login').send({ email, password })).body.accessToken as string;
@@ -20,9 +20,9 @@ async function login(email: string, password: string) {
 
 describe('reservations (FIFO + promote-on-return)', () => {
   beforeAll(async () => {
-    staffToken = await login('librarian@bibliohub.local', 'Librarian123!');
-    memberToken = await login('member@bibliohub.local', 'Member123!');
-    memberId = (await prisma.user.findUniqueOrThrow({ where: { email: 'member@bibliohub.local' } })).id;
+    staffToken = await login('librarian@als.local', 'Librarian123!');
+    memberToken = await login('member@als.local', 'Member123!');
+    memberId = (await prisma.user.findUniqueOrThrow({ where: { email: 'member@als.local' } })).id;
 
     // A second member for the queue.
     await request(app).post('/api/auth/register').send({
